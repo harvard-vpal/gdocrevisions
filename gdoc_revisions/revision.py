@@ -1,4 +1,5 @@
-from operations import getOperation
+from operations import getOperation, MultiOperation
+from datetime import datetime
 
 
 class Revision(object):
@@ -10,7 +11,7 @@ class Revision(object):
     '''
     def __init__(self, revision_raw):
         # timestamp
-        self.time = datetime.datetime.fromtimestamp(revision_raw[1] / 1e3)
+        self.time = datetime.fromtimestamp(revision_raw[1] / 1e3)
         # google user id of the revision author
         self.user_id = revision_raw[2]
         # numeric revision id, corresponding to id in the Google API
@@ -25,3 +26,17 @@ class Revision(object):
         self.operation_raw = revision_raw[0]
         # Operation object
         self.operation = getOperation(self.operation_raw)
+        # Array of operations, with no multi operations
+        self.operations = flatten_multioperation(self.operation)
+
+
+def flatten_multioperation(operation):
+    operations = []
+    if type(operation) is MultiOperation:
+        for suboperation in operation.operations:
+            operations.extend(flatten_multioperation(suboperation))
+    else:
+        operations = [operation]
+    return operations
+    
+
