@@ -1,3 +1,16 @@
+def getOperation(operation_raw):
+    '''
+    Factory method that returns Operation or subclass instance
+    takes as input a single dict with change info
+    '''
+    operation_types = {
+        'is': InsertString,
+        'ds': DeleteString,
+        'mlti': MultiOperation,
+    }
+    operation = operation_types.get(operation_raw['ty']) or Operation
+    return operation(operation_raw)
+
 
 class Operation(object):
     '''
@@ -12,20 +25,6 @@ class Operation(object):
 
     def apply(document):
         pass
-
-
-def getOperation(operation_raw):
-    '''
-    Factory method that returns Operation or subclass instance
-    takes as input a single dict with change info
-    '''
-    operation_types = {
-        'is': InsertString,
-        'ds': DeleteString,
-        'mlti': MultiOperation,
-    }
-    operation = operation_types.get(operation_raw['ty']) or Operation
-    return operation(operation_raw)
 
 
 class InsertString(Operation):
