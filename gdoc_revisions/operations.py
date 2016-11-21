@@ -54,6 +54,6 @@ class MultiOperation(Operation):
     '''
     def __init__(self, operation_raw):
         super(MultiOperation, self).__init__(operation_raw)
-        self.operations = [getOperation(x) for x in operation_raw['mts']]
+        self.suboperations = [getOperation(x) for x in operation_raw['mts']]
         self.type = 'multiple operations'
 

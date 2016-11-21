@@ -33,7 +33,7 @@ class Revision(object):
 def flatten_multioperation(operation):
     operations = []
     if type(operation) is MultiOperation:
-        for suboperation in operation.operations:
+        for suboperation in operation.suboperations:
             operations.extend(flatten_multioperation(suboperation))
     else:
         operations = [operation]
