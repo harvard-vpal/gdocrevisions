@@ -42,7 +42,7 @@ class InsertString(Operation):
         insert string into document at specified index
         '''
         for i,char in enumerate(self.string):
-            document.insert(self.start_index+i, char)
+            document.insert(self.start_index-1+i, char)
 
 
 class DeleteString(Operation):
@@ -59,7 +59,7 @@ class DeleteString(Operation):
         '''
         Delete string from document between specified indices
         '''
-        del document[self.start_index:self.end_index]
+        del document[self.start_index-1:self.end_index]
         
 
 class MultiOperation(Operation):
