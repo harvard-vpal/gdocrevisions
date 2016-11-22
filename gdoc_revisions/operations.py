@@ -23,7 +23,7 @@ class Operation(object):
         '''
         self.raw = operation_raw
 
-    def apply(self, document):
+    def apply(self, content):
         pass
 
 
@@ -37,12 +37,12 @@ class InsertString(Operation):
         self.start_index = operation_raw['ibi']
         self.type = 'insert string'
 
-    def apply(self, document):
+    def apply(self, content):
         '''
-        insert string into document at specified index
+        Insert string into document at specified index
         '''
         for i,char in enumerate(self.string):
-            document.insert(self.start_index-1+i, char)
+            content.insert(self.start_index-1+i, char)
 
 
 class DeleteString(Operation):
@@ -55,11 +55,11 @@ class DeleteString(Operation):
         self.end_index = operation_raw['ei']
         self.type = 'delete string'
 
-    def apply(self, document):
+    def apply(self, content):
         '''
         Delete string from document between specified indices
         '''
-        del document[self.start_index-1:self.end_index]
+        del content[self.start_index-1:self.end_index]
         
 
 class MultiOperation(Operation):
@@ -72,10 +72,10 @@ class MultiOperation(Operation):
         self.suboperations = [getOperation(x) for x in operation_raw['mts']]
         self.type = 'multiple operations'
 
-    def apply(self, document):
+    def apply(self, content):
         '''
-        Apply each of the suboperations comprising the Multioperation
+        Apply each of the suboperations comprising the MultiOperation
         '''
         for suboperation in self.suboperations:
-            self.suboperation.apply(document)
+            self.suboperation.apply(content)
             
