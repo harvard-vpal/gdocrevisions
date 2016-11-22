@@ -29,6 +29,9 @@ class Revision(object):
         # Array of operations, with no multi operations
         self.operations = flatten_multioperation(self.operation)
 
+    def to_dict(self):
+        return self.__dict__
+
 
 def flatten_multioperation(operation):
     operations = []

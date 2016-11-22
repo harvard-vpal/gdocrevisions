@@ -45,6 +45,16 @@ class Document(object):
         with open(path, 'wb') as f:
             document = pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
+    @property
+    def operations(self):
+        '''
+        Return a flattened array of revision operations
+        Accessed as an object attribute
+        '''
+        operations = []
+        [operations.extend(r.operations) for r in self.revisions]
+        return operations
+
 
 class GoogleDoc(Document):
     '''
