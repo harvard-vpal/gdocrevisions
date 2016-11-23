@@ -30,8 +30,18 @@ class Revision(object):
         self.operations = flatten_multioperation(self.operation)
 
     def to_dict(self):
-        return self.__dict__
-
+        dict_attributes = [
+            'time',
+            'user_id',
+            'revision_id',
+            'session_id',
+            'session_revision_index',
+            'raw',
+            'operation_raw',
+            'operation',
+            'operations'
+        ]
+        return {attr:getattr(self,attr) for attr in dict_attributes}
 
 def flatten_multioperation(operation):
     operations = []
