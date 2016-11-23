@@ -2,11 +2,20 @@ from apiclient.discovery import build
 from httplib2 import Http
 import json
 from revision import Revision
+from session import Session
 import pickle
+from collections import defaultdict
 
 class Document(object):
     '''
     Basic Document class
+
+    Attributes:
+        revisions
+        content
+        current_revision_id
+        operations
+        sessions
     '''
     def __init__(self, revisions):
         self.revisions = revisions
@@ -27,12 +36,18 @@ class Document(object):
             self.apply_revision(revision)
 
     def at_time(self, datetime):
+        '''
+        Revert document content to a point in time 
+        '''
         revisions = filter(lambda revision: revision.time<=datetime, self.revisions)
         self.content = []
         self.apply_revisions(revisions)
         return self
 
     def at_revision(self, revision_id):
+        '''
+        Revert document content to a revision id
+        '''
         revisions = filter(lambda revision: revision.revision_id<=revision_id, self.revisions)
         self.content = []
         self.apply_revisions(revisions)
@@ -49,17 +64,43 @@ class Document(object):
     def operations(self):
         '''
         Return a flattened array of revision operations
-        Accessed as an object attribute
         '''
         operations = []
         [operations.extend(r.operations) for r in self.revisions]
         return operations
+
+    @property
+    def sessions(self):
+        '''
+        Return a list of Session objects
+        '''
+        sessions = []
+        session_revisions = defaultdict(list)
+        for revision in self.revisions:
+            session_revisions[revision.session_id].append(revision)
+        for session_id, revisions in session_revisions.items():
+            if session_id:
+                sessions.append(Session(revisions))
+        # sort by start time attribute
+        sessions.sort(key=lambda x: x.start_time)
+        return sessions
+
 
 
 class GoogleDoc(Document):
     '''
     Google doc class
     Contains document metadata and revision history
+
+    Attributes:
+        name
+        file_id
+        revisions_raw
+        revisions
+        content
+        current_revision_id
+        operations
+        sessions
     '''
     def __init__(self, file_id, credentials):
 

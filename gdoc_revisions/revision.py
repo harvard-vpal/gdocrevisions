@@ -17,9 +17,9 @@ class Revision(object):
         # numeric revision id, corresponding to id in the Google API
         self.revision_id = revision_raw[3]
         # session string identifier
-        self.session = revision_raw[4]
+        self.session_id = revision_raw[4]
         # index of the revision, within the user session
-        self.session_revision = revision_raw[5]
+        self.session_revision_index = revision_raw[5]
         # array of raw revision metadata
         self.raw = revision_raw
         # dictionary of raw operation metadata
