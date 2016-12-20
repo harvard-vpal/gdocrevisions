@@ -6,6 +6,32 @@ from session import Session
 import pickle
 from collections import defaultdict
 
+class Content(object):
+    '''
+    Represents document content with a list of Element objects
+    '''
+    def __init__(self):
+        self.elements = []
+
+    def apply_revision(self, revision):
+        '''
+        apply a revision to content, by applying all of its operations
+        '''
+        for operation in revision.operations:
+            # revision is passed so that content elements can reference revision
+            operation.apply(self.elements, revision)
+
+    def apply_revisions(self, revisions):
+        for revision in revisions:
+            self.apply_revision(revision)
+    
+    def render(self):
+        return ''.join([element.char for element in self.elements])
+
+    def reset(self):
+        self.elements = []
+
+
 class Document(object):
     '''
     Basic Document class
@@ -19,29 +45,18 @@ class Document(object):
     '''
     def __init__(self, revisions):
         self.revisions = revisions
-        self.content = []
+        self.content = Content()
         self.current_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
         # populate content by applying all revisions
-        self.apply_revisions(self.revisions)
-
-    def render(self):
-        return ''.join(self.content)
-
-    def apply_revision(self, revision):
-        for operation in revision.operations:
-            operation.apply(self.content)
-
-    def apply_revisions(self, revisions):
-        for revision in revisions:
-            self.apply_revision(revision)
+        self.content.apply_revisions(self.revisions)
 
     def at_time(self, datetime):
         '''
         Revert document content to a point in time 
         '''
         revisions = filter(lambda revision: revision.time<=datetime, self.revisions)
-        self.content = []
-        self.apply_revisions(revisions)
+        self.content.reset()
+        self.content.apply_revisions(revisions)
         return self
 
     def at_revision(self, revision_id):
@@ -49,8 +64,8 @@ class Document(object):
         Revert document content to a revision id
         '''
         revisions = filter(lambda revision: revision.revision_id<=revision_id, self.revisions)
-        self.content = []
-        self.apply_revisions(revisions)
+        self.content.reset()
+        self.content.apply_revisions(revisions)
         return self
 
     def to_pickle(self, path):
@@ -66,7 +81,8 @@ class Document(object):
         Return a flattened array of revision operations
         '''
         operations = []
-        [operations.extend(r.operations) for r in self.revisions]
+        for r in self.revisions:
+            operations.extend(r.operations)
         return operations
 
     @property
@@ -84,7 +100,6 @@ class Document(object):
         # sort by start time attribute
         sessions.sort(key=lambda x: x.start_time)
         return sessions
-
 
 
 class GoogleDoc(Document):

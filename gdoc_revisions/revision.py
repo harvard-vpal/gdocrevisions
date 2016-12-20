@@ -1,4 +1,4 @@
-from operations import getOperation, MultiOperation
+from operation import getOperation, MultiOperation
 from datetime import datetime
 
 

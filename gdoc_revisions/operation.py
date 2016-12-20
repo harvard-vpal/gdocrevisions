@@ -1,3 +1,5 @@
+from element import Character
+
 def getOperation(operation_raw):
     '''
     Factory method that returns Operation or subclass instance
@@ -23,7 +25,10 @@ class Operation(object):
         '''
         self.raw = operation_raw
 
-    def apply(self, content):
+    def apply(self, elements, revision):
+        '''
+        elements is a list of Element instances
+        '''
         pass
 
 
@@ -37,12 +42,12 @@ class InsertString(Operation):
         self.start_index = operation_raw['ibi']
         self.type = 'insert string'
 
-    def apply(self, content):
+    def apply(self, elements, revision):
         '''
         Insert string into document at specified index
         '''
         for i,char in enumerate(self.string):
-            content.insert(self.start_index-1+i, char)
+            elements.insert(self.start_index-1+i, Character(revision, char))
 
 
 class DeleteString(Operation):
@@ -55,11 +60,11 @@ class DeleteString(Operation):
         self.end_index = operation_raw['ei']
         self.type = 'delete string'
 
-    def apply(self, content):
+    def apply(self, elements, revision):
         '''
         Delete string from document between specified indices
         '''
-        del content[self.start_index-1:self.end_index]
+        del elements[self.start_index-1:self.end_index]
         
 
 class MultiOperation(Operation):
@@ -72,10 +77,10 @@ class MultiOperation(Operation):
         self.suboperations = [getOperation(x) for x in operation_raw['mts']]
         self.type = 'multiple operations'
 
-    def apply(self, content):
+    def apply(self, elements, revision=None):
         '''
         Apply each of the suboperations comprising the MultiOperation
         '''
         for suboperation in self.suboperations:
-            self.suboperation.apply(content)
+            self.suboperation.apply(elements, revision)
             
