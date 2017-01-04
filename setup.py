@@ -8,6 +8,8 @@ setup(name='gdocrevisions',
       author_email='andrew_ang@harvard.edu',
       license='MIT',
       packages=['gdocrevisions'],
-      package_data={'gdocrevisions': ['lib/*', 'bin/*'] },
-      zip_safe=False,
+      install_requires=[
+      	'oauth2client',
+      	'google-api-python-client',
+      ],
 )
