@@ -5,6 +5,7 @@ from revision import Revision
 from session import Session
 import pickle
 from collections import defaultdict
+import copy
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
@@ -107,6 +108,15 @@ class Document(object):
         # sort by start time attribute
         sessions.sort(key=lambda x: x.start_time)
         return sessions
+
+    def replay(self):
+        """
+        iterator/generator that returns document states
+        """
+        content_state = Content()
+        for revision in self.revisions:
+            content_state.apply_revision(revision)
+            yield copy.deepcopy(content_state)
 
 
 class GoogleDoc(Document):
