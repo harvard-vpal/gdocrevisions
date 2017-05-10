@@ -3,3 +3,4 @@
 settings/
 doc-revisions-98c56004e106.json
 .idea/
+*.egg-info/
