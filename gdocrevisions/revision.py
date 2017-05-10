@@ -27,7 +27,7 @@ class Revision(object):
         # Operation object
         self.operation = getOperation(self.operation_raw)
         # Array of operations, with no multi operations
-        self.operations = flatten_multioperation(self.operation)
+        self.operations = _flatten_multioperation(self.operation)
 
     def to_dict(self):
         dict_attributes = [
@@ -43,11 +43,11 @@ class Revision(object):
         ]
         return {attr:getattr(self,attr) for attr in dict_attributes}
 
-def flatten_multioperation(operation):
+def _flatten_multioperation(operation):
     operations = []
     if type(operation) is MultiOperation:
         for suboperation in operation.suboperations:
-            operations.extend(flatten_multioperation(suboperation))
+            operations.extend(_flatten_multioperation(suboperation))
     else:
         operations = [operation]
     return operations
