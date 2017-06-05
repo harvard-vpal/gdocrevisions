@@ -7,7 +7,8 @@ pip install gdocrevisions
 ```
 
 ## Other setup
-Create a google service account and create a json credentials file.
+* Create a google service account and create a json credentials file.
+* Share a google doc with the service account email (e.g. service-account@appspot.gserviceaccount.com)
 
 ## Example usage
 ```
