@@ -1,19 +1,32 @@
-# Google doc revision analytics
-Prototyping tools to extract and analyze google doc revision history data.
+# gdocrevisions: Google Doc Revisions
+Python package to retrieve and process google doc revision history data.
 
-Example usage of gdocrevisions module:
+## Installation
 ```
-from oauth2client.service_account import ServiceAccountCredentials
+pip install gdocrevisions
+```
+
+## Other setup
+Create a google service account and create a json credentials file.
+
+## Example usage
+```
 import gdocrevisions
+from oauth2client.service_account import ServiceAccountCredentials
 
+# Specify the service account credentials file
 CREDENTIAL_FILE = 'my-credentials.json'
-FILE_ID = 'abcdefg12345'
-
 scope = ['https://www.googleapis.com/auth/drive']
 credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIAL_FILE, scope)
 
+# The file id can be found in the URL
+# e.g. https://docs.google.com/document/d/<FILE_ID>
+FILE_ID = 'abcdefg12345'
+
+# Initialize a GoogleDoc object instance, which retrieves revision data 
 gdoc = gdocrevisions.GoogleDoc(FILE_ID, credentials)
 
+# Doc and revision data is available in the object instance attributes
 gdoc.metadata
 gdoc.revisions
 gdoc.revisions[0].operation
