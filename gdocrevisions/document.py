@@ -12,16 +12,16 @@ logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 class Content(object):
-    '''
+    """
     Represents document content with a list of Element objects
-    '''
+    """
     def __init__(self):
         self.elements = []
 
     def apply_revision(self, revision):
-        '''
+        """
         apply a revision to content, by applying all of its operations
-        '''
+        """
         for operation in revision.operations:
             # revision is passed so that content elements can reference revision
             operation.apply(self.elements, revision)
@@ -38,7 +38,7 @@ class Content(object):
 
 
 class Document(object):
-    '''
+    """
     Basic Document class
 
     Attributes:
@@ -47,7 +47,7 @@ class Document(object):
         current_revision_id
         operations
         sessions
-    '''
+    """
     def __init__(self, revisions):
         logging.debug("[Document.__init__()]: Start")
         self.revisions = revisions
@@ -59,35 +59,35 @@ class Document(object):
         logging.debug("[Document.__init__()]: Finished")
 
     def at_time(self, datetime):
-        '''
+        """
         Revert document content to a point in time 
-        '''
+        """
         revisions = filter(lambda revision: revision.time<=datetime, self.revisions)
         self.content.reset()
         self.content.apply_revisions(revisions)
         return self
 
     def at_revision(self, revision_id):
-        '''
+        """
         Revert document content to a revision id
-        '''
+        """
         revisions = filter(lambda revision: revision.revision_id<=revision_id, self.revisions)
         self.content.reset()
         self.content.apply_revisions(revisions)
         return self
 
     def to_pickle(self, path):
-        '''
+        """
         Pickle a Document
-        '''
+        """
         with open(path, 'wb') as f:
             document = pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     @property
     def operations(self):
-        '''
+        """
         Return a flattened array of revision operations
-        '''
+        """
         operations = []
         for r in self.revisions:
             operations.extend(r.operations)
@@ -95,9 +95,9 @@ class Document(object):
 
     @property
     def sessions(self):
-        '''
+        """
         Return a list of Session objects
-        '''
+        """
         sessions = []
         session_revisions = defaultdict(list)
         for revision in self.revisions:
@@ -116,11 +116,11 @@ class Document(object):
         content_state = Content()
         for revision in self.revisions:
             content_state.apply_revision(revision)
-            yield copy.deepcopy(content_state)
+            yield content_state
 
 
 class GoogleDoc(Document):
-    '''
+    """
     Google doc class
     Contains document metadata and revision history
 
@@ -133,7 +133,7 @@ class GoogleDoc(Document):
         current_revision_id
         operations
         sessions
-    '''
+    """
     def __init__(self, file_id, credentials):
         logging.debug("[GoogleDoc.__init__()]: Start")
         # oauth2client.service_account.ServiceAccountCredentials object
@@ -153,15 +153,15 @@ class GoogleDoc(Document):
         super(GoogleDoc, self).__init__(revisions)
 
     def _gdrive_api(self):
-        '''
+        """
         Return an authorized drive api service object
-        '''
+        """
         return build('drive', 'v3', credentials=self.credentials)
         
     def _last_revision_id(self):
-        '''
+        """
         Return the id of the last revision to a document, using the offical google api v3
-        '''
+        """
         revision_metainfo = self._gdrive_api().revisions().list(fileId=self.file_id).execute()
         if len(revision_metainfo['revisions']) == 1:
             return revision_metainfo['revisions'][1]['id']
@@ -169,17 +169,17 @@ class GoogleDoc(Document):
             return revision_metainfo['revisions'][-1]['id']
     
     def _generate_revision_url(self, start, end):
-        '''
+        """
         Generates a url for downloading revision details (using undocumented google api endpoint)
-        '''
+        """
         base_url = 'https://docs.google.com/document/d/{file_id}/revisions/load?id={file_id}&start={start}&end={end}'
         url = base_url.format(file_id=self.file_id,start=start,end=end)
         return url
 
     def _download_revision_details(self):
-        '''
+        """
         download json-like data with revision info
-        '''
+        """
         http_auth = self.credentials.authorize(Http())
         last_revision_id = self._last_revision_id()
         url = self._generate_revision_url(start=1,end=last_revision_id)
@@ -188,9 +188,9 @@ class GoogleDoc(Document):
 
 
 def read_pickle(path):
-    '''
+    """
     Load Document from pickle
-    '''
+    """
     with open(path, 'rb') as f:
         document = pickle.load(f)
     return document
