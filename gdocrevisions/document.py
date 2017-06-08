@@ -164,7 +164,7 @@ class GoogleDoc(Document):
         '''
         revision_metainfo = self._gdrive_api().revisions().list(fileId=self.file_id).execute()
         if len(revision_metainfo['revisions']) == 1:
-            return revision_metainfo['revisions'][1]['id']
+            return revision_metainfo['revisions'][0]['id']
         else:
             return revision_metainfo['revisions'][-1]['id']
     
