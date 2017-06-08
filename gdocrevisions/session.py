@@ -1,7 +1,7 @@
 class Session(object):
-	'''
+	"""
 	Session class
-	'''
+	"""
 	def __init__(self, revisions):
 		# list of revisions
 		self.revisions = revisions

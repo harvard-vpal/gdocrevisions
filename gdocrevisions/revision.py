@@ -3,12 +3,12 @@ from datetime import datetime
 
 
 class Revision(object):
-    '''
+    """
     Revision class
     Corresponds to Revision resource type in Google API: 
     https://developers.google.com/drive/v3/reference/revisions
     A Revision contains an Operation
-    '''
+    """
     def __init__(self, revision_raw):
         # timestamp
         self.time = datetime.fromtimestamp(revision_raw[1] / 1e3)
