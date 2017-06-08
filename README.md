@@ -10,6 +10,9 @@ pip install gdocrevisions
 * Create a google service account and create a json credentials file.
 * Share a google doc with the service account email (e.g. service-account@appspot.gserviceaccount.com)
 
+## Documentation
+[Documentation website for gdocrevisions](https://harvard-vpal.github.io/gdocrevisions/docs/)
+
 ## Example usage
 ```
 import gdocrevisions
