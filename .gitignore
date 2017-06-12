@@ -6,3 +6,4 @@ doc-revisions-98c56004e106.json
 *.egg-info/
 build/
 dist/
+doctrees/
