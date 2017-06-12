@@ -8,7 +8,9 @@ from collections import defaultdict
 import copy
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('gdocrevisions')
+
+# ignore warnings from google api client library
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 class Content(object):
@@ -49,14 +51,16 @@ class Document(object):
         sessions
     """
     def __init__(self, revisions):
-        logging.debug("[Document.__init__()]: Start")
+        logger.debug("[Document.__init__()]: Start")
         self.revisions = revisions
+        """ List of Revision objects """
         self.content = Content()
+        """ Content object """
         self.current_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
         # populate content by applying all revisions
-        logging.debug("[Document.__init__()]: Applying revisions")
+        logger.debug("[Document.__init__()]: Applying revisions")
         self.content.apply_revisions(self.revisions)
-        logging.debug("[Document.__init__()]: Finished")
+        logger.debug("[Document.__init__()]: Finished")
 
     def at_time(self, datetime):
         """
@@ -135,7 +139,7 @@ class GoogleDoc(Document):
         sessions
     """
     def __init__(self, file_id, credentials):
-        logging.debug("[GoogleDoc.__init__()]: Start")
+        logger.debug("[GoogleDoc.__init__()]: Start")
         # oauth2client.service_account.ServiceAccountCredentials object
         self.credentials = credentials
         # dictionary of document metadata via Google API
@@ -147,7 +151,7 @@ class GoogleDoc(Document):
         # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
         self.revisions_raw = self._download_revision_details()
         # array of Revision objects
-        logging.debug("[GoogleDoc.__init__()]: Initializing revisions")
+        logger.debug("[GoogleDoc.__init__()]: Initializing revisions")
         revisions = [Revision(r) for r in self.revisions_raw['changelog']]
         # initialize Document attributes
         super(GoogleDoc, self).__init__(revisions)
