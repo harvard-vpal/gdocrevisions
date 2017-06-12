@@ -24,6 +24,7 @@ class Operation(object):
         operation_raw is a dictionary of raw operation metadata
         """
         self.raw = operation_raw
+        self.type = 'operation'
 
     def apply(self, elements, revision):
         """
