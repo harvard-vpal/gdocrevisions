@@ -10,7 +10,7 @@ import logging
 
 logger = logging.getLogger('gdocrevisions')
 
-# ignore warnings from google api client library
+# suppress warnings from google api client library
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 class Content(object):
