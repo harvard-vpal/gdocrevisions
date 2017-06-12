@@ -1,5 +1,8 @@
 # Minimal makefile for Sphinx documentation
 #
+# Use command " make . " from this directory to build the docs.
+# This builds the html documentation inside /docs/docs.
+#
 
 # You can set these variables from the command line.
 SPHINXOPTS    = -b html
