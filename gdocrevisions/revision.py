@@ -28,8 +28,8 @@ class Revision(object):
         # Operation object
         self.operation = operation_factory(self.operation_raw, self)
         # Array of operations, with no multi operations
-        self.operations = _flatten_multioperation(self.operation)
-
+        self.operations = self.operation.flatten() if self.operation.__class__.__name__=='MultiOperation' else [self.operation]
+        
 
     def to_dict(self):
         DICT_ATTRIBUTES = [
@@ -44,15 +44,5 @@ class Revision(object):
             'operations'
         ]
         return {attr:getattr(self,attr) for attr in self.DICT_ATTRIBUTES}
-
-
-def _flatten_multioperation(operation):
-    operations = []
-    if type(operation) is MultiOperation:
-        for suboperation in operation.suboperations:
-            operations.extend(_flatten_multioperation(suboperation))
-    else:
-        operations = [operation]
-    return operations
     
 
