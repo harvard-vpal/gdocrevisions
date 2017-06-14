@@ -9,6 +9,7 @@ class Revision(object):
     https://developers.google.com/drive/v3/reference/revisions
     A Revision contains an Operation
     """
+
     def __init__(self, revision_raw):
         # timestamp
         self.time = datetime.fromtimestamp(revision_raw[1] / 1e3)
@@ -25,12 +26,13 @@ class Revision(object):
         # dictionary of raw operation metadata
         self.operation_raw = revision_raw[0]
         # Operation object
-        self.operation = getOperation(self.operation_raw)
+        self.operation = getOperation(self.operation_raw, self)
         # Array of operations, with no multi operations
         self.operations = _flatten_multioperation(self.operation)
 
+
     def to_dict(self):
-        dict_attributes = [
+        DICT_ATTRIBUTES = [
             'time',
             'user_id',
             'revision_id',
@@ -41,7 +43,8 @@ class Revision(object):
             'operation',
             'operations'
         ]
-        return {attr:getattr(self,attr) for attr in dict_attributes}
+        return {attr:getattr(self,attr) for attr in self.DICT_ATTRIBUTES}
+
 
 def _flatten_multioperation(operation):
     operations = []

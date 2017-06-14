@@ -25,8 +25,7 @@ class Content(object):
         apply a revision to content, by applying all of its operations
         """
         for operation in revision.operations:
-            # revision is passed so that content elements can reference revision
-            operation.apply(self.elements, revision)
+            operation.apply(self.elements)
 
     def apply_revisions(self, revisions):
         for revision in revisions:
