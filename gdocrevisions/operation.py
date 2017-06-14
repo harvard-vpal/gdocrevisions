@@ -4,7 +4,10 @@ from element import Character
 def operation_factory(operation_raw, revision):
     """
     Factory method that returns Operation or subclass instance
-    takes as input a single dict with change info
+    Arguments:
+        operation_raw (dict): raw operation data
+        revision (Revision): revision instance, which gets associated
+            with any created Element objects
     """
     operation_types = {
         'is': InsertString,
@@ -96,7 +99,7 @@ class MultiOperation(Operation):
 
     def flatten(self):
         """
-        Flatten the suboperation tree into a list
+        Flatten the suboperation tree into a list of suboperations
         """
         operations = []
         for suboperation in self.suboperations:
