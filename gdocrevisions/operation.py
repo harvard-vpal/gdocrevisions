@@ -34,6 +34,12 @@ class Operation(object):
         """
         pass
 
+    def flatten(self):
+        """
+        Default behavior for flatten returns the operation as the singular element of a list
+        """
+        return [self]
+
 
 class InsertString(Operation):
     """
@@ -92,20 +98,8 @@ class MultiOperation(Operation):
         """
         Flatten the suboperation tree into a list
         """
-        return flatten_multioperation(self)
-
-def flatten_multioperation(operation):
-    """
-    Flattens suboperation tree of a multioperation into a list
-    If input operation is not a multioperation, returns that operation inside a list of size 1
-    Arguments:
-        operation (Operation): Operation (or Operation subclass) instance
-    """
-    operations = []
-    if type(operation) is MultiOperation:
-        for suboperation in operation.suboperations:
-            operations.extend(flatten_multioperation(suboperation))
-    else:
-        operations = [operation]
-    return operations
+        operations = []
+        for suboperation in self.suboperations:
+            operations.extend(suboperation.flatten())
+        return operations
 

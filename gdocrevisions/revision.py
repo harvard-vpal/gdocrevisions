@@ -1,4 +1,4 @@
-from operation import operation_factory, MultiOperation
+from operation import operation_factory
 from datetime import datetime
 
 
@@ -28,7 +28,7 @@ class Revision(object):
         # Operation object
         self.operation = operation_factory(self.operation_raw, self)
         # Array of operations, with no multi operations
-        self.operations = self.operation.flatten() if self.operation.__class__.__name__=='MultiOperation' else [self.operation]
+        self.operations = self.operation.flatten()
         
 
     def to_dict(self):
