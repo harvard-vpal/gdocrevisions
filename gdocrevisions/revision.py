@@ -1,4 +1,4 @@
-from operation import getOperation, MultiOperation
+from operation import operation_factory, MultiOperation
 from datetime import datetime
 
 
@@ -26,7 +26,7 @@ class Revision(object):
         # dictionary of raw operation metadata
         self.operation_raw = revision_raw[0]
         # Operation object
-        self.operation = getOperation(self.operation_raw, self)
+        self.operation = operation_factory(self.operation_raw, self)
         # Array of operations, with no multi operations
         self.operations = _flatten_multioperation(self.operation)
 

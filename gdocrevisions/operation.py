@@ -1,7 +1,7 @@
 from element import Character
 
 
-def getOperation(operation_raw, revision):
+def operation_factory(operation_raw, revision):
     """
     Factory method that returns Operation or subclass instance
     takes as input a single dict with change info
@@ -78,7 +78,7 @@ class MultiOperation(Operation):
     """
     def __init__(self, operation_raw, revision):
         super(MultiOperation, self).__init__(operation_raw, revision)
-        self.suboperations = [getOperation(suboperation_raw, revision) for suboperation_raw in operation_raw['mts']]
+        self.suboperations = [operation_factory(suboperation_raw, revision) for suboperation_raw in operation_raw['mts']]
         self.type = 'multiple operations'
 
     def apply(self, elements):
