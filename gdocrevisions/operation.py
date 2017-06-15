@@ -28,7 +28,7 @@ class Operation(object):
         operation_raw is a dictionary of raw operation metadata
         """
         self.raw = operation_raw
-        self.type = 'operation'
+        self.type = self.__class__.__name__
         self.revision = revision
 
     def apply(self, elements):
@@ -52,7 +52,6 @@ class InsertString(Operation):
         super(InsertString, self).__init__(operation_raw, revision)
         self.string = operation_raw['s']
         self.start_index = operation_raw['ibi']
-        self.type = 'insert string'
         self.elements = [Character(self.revision, char) for char in self.string]
 
     def apply(self, elements):
@@ -71,7 +70,6 @@ class DeleteString(Operation):
         super(DeleteString, self).__init__(operation_raw, revision)
         self.start_index = operation_raw['si']
         self.end_index = operation_raw['ei']
-        self.type = 'delete string'
 
     def apply(self, elements):
         """
@@ -88,7 +86,6 @@ class MultiOperation(Operation):
     def __init__(self, operation_raw, revision):
         super(MultiOperation, self).__init__(operation_raw, revision)
         self.suboperations = [operation_factory(suboperation_raw, revision) for suboperation_raw in operation_raw['mts']]
-        self.type = 'multiple operations'
 
     def apply(self, elements):
         """
