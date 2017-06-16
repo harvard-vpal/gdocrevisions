@@ -49,7 +49,12 @@ class Document(object):
         operations
         sessions
     """
-    def __init__(self, revisions):
+    def __init__(self, revisions, apply_revisions=True):
+        """
+        Arguments:
+            revisions (list): list of revision objects
+            latest (bool): indicates whether to build the content state on initialization
+        """
         logger.debug("[Document.__init__()]: Start")
         self.revisions = revisions
         """ List of Revision objects """
@@ -57,8 +62,9 @@ class Document(object):
         """ Content object """
         self.current_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
         # populate content by applying all revisions
-        logger.debug("[Document.__init__()]: Applying revisions")
-        self.content.apply_revisions(self.revisions)
+        if apply_revisions:
+            logger.debug("[Document.__init__()]: Applying revisions")
+            self.content.apply_revisions(self.revisions)
         logger.debug("[Document.__init__()]: Finished")
 
     def at_time(self, datetime):
@@ -137,7 +143,7 @@ class GoogleDoc(Document):
         operations
         sessions
     """
-    def __init__(self, file_id, credentials):
+    def __init__(self, file_id, credentials, **kwargs):
         logger.debug("[GoogleDoc.__init__()]: Start")
         # oauth2client.service_account.ServiceAccountCredentials object
         self.credentials = credentials
@@ -153,7 +159,7 @@ class GoogleDoc(Document):
         logger.debug("[GoogleDoc.__init__()]: Initializing revisions")
         revisions = [Revision(r) for r in self.revisions_raw['changelog']]
         # initialize Document attributes
-        super(GoogleDoc, self).__init__(revisions)
+        super(GoogleDoc, self).__init__(revisions, **kwargs)
 
     def _gdrive_api(self):
         """
