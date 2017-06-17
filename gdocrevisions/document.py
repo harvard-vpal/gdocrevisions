@@ -33,7 +33,7 @@ class Content(object):
             self.apply_revision(revision)
     
     def render(self):
-        return ''.join([element.char for element in self.elements])
+        return ''.join([element.render() for element in self.elements])
 
     def reset(self):
         self.__init__()

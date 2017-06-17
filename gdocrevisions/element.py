@@ -7,6 +7,9 @@ class Element(object):
 	def __init__(self, revision):
 		self.revision = revision
 
+	def render(self):
+		return ""
+
 
 class Character(Element):
 	"""
@@ -19,6 +22,9 @@ class Character(Element):
 		# character string
 		self.char = char
 
+	def render(self):
+		return self.char
+
 
 class EndOfBody(Element):
 	"""
@@ -26,4 +32,4 @@ class EndOfBody(Element):
 	Separates main content from footnote text
 	"""
 	def __init__(self):
-		self.char = "__EOB__"
+		pass
