@@ -8,6 +8,8 @@ from collections import defaultdict
 import copy
 import logging
 from element import EndOfBody
+from oauth2client.client import OAuth2Credentials
+from oauth2client.service_account import ServiceAccountCredentials
 
 logger = logging.getLogger('gdocrevisions')
 
@@ -21,12 +23,15 @@ class Content(object):
     def __init__(self):
         self.elements = [EndOfBody()]
 
+    def apply_operation(self, operation):
+        operation.apply(self.elements)
+
     def apply_revision(self, revision):
         """
         apply a revision to content, by applying all of its operations
         """
         for operation in revision.operations:
-            operation.apply(self.elements)
+            self.apply_operation(operation)
 
     def apply_revisions(self, revisions):
         for revision in revisions:
@@ -133,21 +138,20 @@ class GoogleDoc(Document):
     """
     Google doc class
     Contains document metadata and revision history
-
-    Attributes:
-        name
-        file_id
-        revisions_raw
-        revisions
-        content
-        current_revision_id
-        operations
-        sessions
     """
-    def __init__(self, file_id, credentials, **kwargs):
+    def __init__(self, file_id, credentials=None, keyfile=None, **kwargs):
+        """
+        Create a GoogleDoc instance
+        Requires either credentials or keyfile arguments to be specified
+
+        Arguments:
+            file_id (str): ID string that can be found in the Google Doc URL
+            credentials (oauth2client.OAuth2Credentals): credentials object
+            keyfile (str): Path to a service account json keyfile
+        """
         logger.debug("[GoogleDoc.__init__()]: Start")
-        # oauth2client.service_account.ServiceAccountCredentials object
-        self.credentials = credentials
+        # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
+        self.credentials = self._get_credentials(credentials, keyfile)
         # dictionary of document metadata via Google API
         self.metadata = self._gdrive_api().files().get(fileId=file_id).execute()
         # doc title
@@ -161,6 +165,18 @@ class GoogleDoc(Document):
         revisions = [Revision(r) for r in self.revisions_raw['changelog']]
         # initialize Document attributes
         super(GoogleDoc, self).__init__(revisions, **kwargs)
+
+    def _get_credentials(self, credentials, keyfile):
+        if credentials:
+            if isinstance(credentials, OAuth2Credentials):
+                return credentials
+            else:
+                raise TypeError("Credential object is not a valid OAuth2Credentials object")
+        elif keyfile:
+            scope = ['https://www.googleapis.com/auth/drive']
+            return ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
+        else:
+            raise ValueError("No credentials provided")
 
     def _gdrive_api(self):
         """
