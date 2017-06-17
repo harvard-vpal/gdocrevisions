@@ -75,7 +75,8 @@ class DeleteString(Operation):
         """
         Delete string from document between specified indices
         """
-        del elements[self.start_index-1:self.end_index]
+        for i in range(self.end_index-self.start_index+1):
+            elements.pop(self.start_index-1)
 
 
 class MultiOperation(Operation):
