@@ -7,6 +7,7 @@ import pickle
 from collections import defaultdict
 import copy
 import logging
+from element import EndOfBody
 
 logger = logging.getLogger('gdocrevisions')
 
@@ -18,7 +19,7 @@ class Content(object):
     Represents document content with a list of Element objects
     """
     def __init__(self):
-        self.elements = []
+        self.elements = [EndOfBody()]
 
     def apply_revision(self, revision):
         """
@@ -35,7 +36,7 @@ class Content(object):
         return ''.join([element.char for element in self.elements])
 
     def reset(self):
-        self.elements = []
+        self.__init__()
 
 
 class Document(object):

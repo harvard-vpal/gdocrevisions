@@ -19,3 +19,11 @@ class Character(Element):
 		# character string
 		self.char = char
 
+
+class EndOfBody(Element):
+	"""
+	Dummy element indicating end of document body
+	Separates main content from footnote text
+	"""
+	def __init__(self):
+		self.char = "__EOB__"
