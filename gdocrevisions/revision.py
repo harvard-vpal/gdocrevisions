@@ -29,8 +29,13 @@ class Revision(object):
         self.operation = operation_factory(self.operation_raw, self)
         # Iterator for operations
         self.iter_operations = self.operation.iter_operations
-        # Array of operations, with no multi operations
-        self.operations = list(self.iter_operations())
+        
+    @property
+    def operations(self):
+        """
+        Array of operations, with no multi operations
+        """
+        return list(self.iter_operations())
         
         
     def to_dict(self):

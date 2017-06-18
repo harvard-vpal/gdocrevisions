@@ -99,16 +99,6 @@ class Document(object):
             document = pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     @property
-    def operations(self):
-        """
-        Return a flattened array of revision operations
-        """
-        operations = []
-        for r in self.revisions:
-            operations.extend(r.operations)
-        return operations
-
-    @property
     def sessions(self):
         """
         Return a list of Session objects
@@ -140,6 +130,13 @@ class Document(object):
         for revision in self.revisions:
             for operation in revision.iter_operations():
                 yield operation
+
+    @property
+    def operations(self):
+        """
+        Return a flattened array of revision operations
+        """
+        return list(self.iter_operations())
 
 
 class GoogleDoc(Document):
