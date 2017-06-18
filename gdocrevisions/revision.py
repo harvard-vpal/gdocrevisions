@@ -27,10 +27,12 @@ class Revision(object):
         self.operation_raw = revision_raw[0]
         # Operation object
         self.operation = operation_factory(self.operation_raw, self)
+        # Iterator for operations
+        self.iter_operations = self.operation.iter_operations
         # Array of operations, with no multi operations
-        self.operations = self.operation.flatten()
+        self.operations = list(self.iter_operations())
         
-
+        
     def to_dict(self):
         DICT_ATTRIBUTES = [
             'time',
@@ -43,6 +45,4 @@ class Revision(object):
             'operation',
             'operations'
         ]
-        return {attr:getattr(self,attr) for attr in self.DICT_ATTRIBUTES}
-    
-
+        return {attr:getattr(self,attr) for attr in DICT_ATTRIBUTES}

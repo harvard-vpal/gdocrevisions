@@ -133,6 +133,14 @@ class Document(object):
             content_state.apply_revision(revision)
             yield content_state
 
+    def iter_operations(self):
+        """
+        Generator that iterates over operations
+        """
+        for revision in self.revisions:
+            for operation in revision.iter_operations():
+                yield operation
+
 
 class GoogleDoc(Document):
     """

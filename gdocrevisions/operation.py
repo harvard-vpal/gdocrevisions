@@ -37,11 +37,8 @@ class Operation(object):
         """
         pass
 
-    def flatten(self):
-        """
-        Default behavior for flatten returns the operation as the singular element of a list
-        """
-        return [self]
+    def iter_operations(self):
+        yield self
 
 
 class InsertString(Operation):
@@ -86,21 +83,24 @@ class MultiOperation(Operation):
     """
     def __init__(self, operation_raw, revision):
         super(MultiOperation, self).__init__(operation_raw, revision)
-        self.suboperations = [operation_factory(suboperation_raw, revision) for suboperation_raw in operation_raw['mts']]
+        self.operations = [operation_factory(operation_raw, revision) for operation_raw in operation_raw['mts']]
 
     def apply(self, elements):
         """
-        Apply each of the suboperations comprising the MultiOperation
+        Apply each of the operations comprising the MultiOperation
         """
-        for suboperation in self.suboperations:
-            self.suboperation.apply(elements)
+        for operation in self.operations:
+            self.operation.apply(elements)
 
-    def flatten(self):
+    def iter_operations(self):
         """
-        Flatten the suboperation tree into a list of suboperations
+        Generator that iterates through base operations.
+        Does a depth-first search of the operations tree,
+        yielding leaf (non-Multioperation) nodes
         """
-        operations = []
-        for suboperation in self.suboperations:
-            operations.extend(suboperation.flatten())
-        return operations
-
+        for operation in self.operations:
+            if hasattr(operation, 'operations'):
+                for operation in operation.iter_operations():
+                    yield operation
+            else:
+                yield operation
