@@ -130,7 +130,6 @@ class Document(object):
         else:
             raise ValueError("'by' not in accepted values (revision, operation)")
 
-
     def iter_operations(self):
         """
         Generator that iterates over operations
