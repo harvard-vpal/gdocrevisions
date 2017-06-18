@@ -114,14 +114,22 @@ class Document(object):
         sessions.sort(key=lambda x: x.start_time)
         return sessions
 
-    def replay(self):
+    def replay(self, by="revision"):
         """
         iterator/generator that returns document states
         """
         content_state = Content()
-        for revision in self.revisions:
-            content_state.apply_revision(revision)
-            yield content_state
+        if by == 'operation':
+            for revision in self.revisions:
+                content_state.apply_revision(revision)
+                yield content_state
+        elif by == 'revision':
+            for operation in self.iter_operations():
+                content_state.apply_operation(operation)
+                yield content_state
+        else:
+            return ValueError("'by' not in accepted values (revision, operation)")
+
 
     def iter_operations(self):
         """
