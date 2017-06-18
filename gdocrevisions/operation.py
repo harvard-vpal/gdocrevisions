@@ -40,6 +40,13 @@ class Operation(object):
     def iter_operations(self):
         yield self
 
+    def to_dict(self):
+        DICT_ATTRIBUTES = [
+            'type',
+            'revision',
+        ]
+        return {attr:getattr(self,attr) for attr in DICT_ATTRIBUTES}
+
 
 class InsertString(Operation):
     """
