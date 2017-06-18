@@ -128,7 +128,7 @@ class Document(object):
                 content_state.apply_operation(operation)
                 yield content_state
         else:
-            return ValueError("'by' not in accepted values (revision, operation)")
+            raise ValueError("'by' not in accepted values (revision, operation)")
 
 
     def iter_operations(self):
