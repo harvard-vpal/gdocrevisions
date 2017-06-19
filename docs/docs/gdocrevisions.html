@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gdocrevisions API reference &#8212; gdocrevisions 0.2 documentation</title>
+    <title>gdocrevisions API reference &#8212; gdocrevisions 0.3 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2',
+        VERSION:     '0.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -48,7 +48,7 @@
 <h2>Document-related objects<a class="headerlink" href="#document-related-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="gdocrevisions.document.Document">
-<em class="property">class </em><code class="descclassname">gdocrevisions.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>revisions</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.Document" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gdocrevisions.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>revisions</em>, <em>apply_revisions=True</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.Document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Basic Document class</p>
 <dl class="docutils">
@@ -77,6 +77,12 @@ sessions</dd>
 <dd><p>Content object</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="gdocrevisions.document.Document.iter_operations">
+<code class="descname">iter_operations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.Document.iter_operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator that iterates over operations</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="gdocrevisions.document.Document.operations">
 <code class="descname">operations</code><a class="headerlink" href="#gdocrevisions.document.Document.operations" title="Permalink to this definition">¶</a></dt>
@@ -85,7 +91,7 @@ sessions</dd>
 
 <dl class="method">
 <dt id="gdocrevisions.document.Document.replay">
-<code class="descname">replay</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.Document.replay" title="Permalink to this definition">¶</a></dt>
+<code class="descname">replay</code><span class="sig-paren">(</span><em>by=’revision’</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.Document.replay" title="Permalink to this definition">¶</a></dt>
 <dd><p>iterator/generator that returns document states</p>
 </dd></dl>
 
@@ -111,21 +117,10 @@ sessions</dd>
 
 <dl class="class">
 <dt id="gdocrevisions.document.GoogleDoc">
-<em class="property">class </em><code class="descclassname">gdocrevisions.document.</code><code class="descname">GoogleDoc</code><span class="sig-paren">(</span><em>file_id</em>, <em>credentials</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.GoogleDoc" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gdocrevisions.document.</code><code class="descname">GoogleDoc</code><span class="sig-paren">(</span><em>file_id</em>, <em>credentials=None</em>, <em>keyfile=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.GoogleDoc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gdocrevisions.document.Document" title="gdocrevisions.document.Document"><code class="xref py py-class docutils literal"><span class="pre">gdocrevisions.document.Document</span></code></a></p>
 <p>Google doc class
 Contains document metadata and revision history</p>
-<dl class="docutils">
-<dt>Attributes:</dt>
-<dd>name
-file_id
-revisions_raw
-revisions
-content
-current_revision_id
-operations
-sessions</dd>
-</dl>
 </dd></dl>
 
 </div>
@@ -139,6 +134,12 @@ sessions</dd>
 Corresponds to Revision resource type in Google API: 
 <a class="reference external" href="https://developers.google.com/drive/v3/reference/revisions">https://developers.google.com/drive/v3/reference/revisions</a>
 A Revision contains an Operation</p>
+<dl class="attribute">
+<dt id="gdocrevisions.revision.Revision.operations">
+<code class="descname">operations</code><a class="headerlink" href="#gdocrevisions.revision.Revision.operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Array of operations, with no multi operations</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="gdocrevisions.revision.Revision.to_dict">
 <code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.revision.Revision.to_dict" title="Permalink to this definition">¶</a></dt>
@@ -151,12 +152,12 @@ A Revision contains an Operation</p>
 <span id="operations"></span><h2>Operations<a class="headerlink" href="#module-gdocrevisions.operation" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="gdocrevisions.operation.DeleteString">
-<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">DeleteString</code><span class="sig-paren">(</span><em>operation_raw</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.DeleteString" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">DeleteString</code><span class="sig-paren">(</span><em>operation_raw</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.DeleteString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gdocrevisions.operation.Operation" title="gdocrevisions.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">gdocrevisions.operation.Operation</span></code></a></p>
 <p>Operation subclass representing a “Delete String” operation</p>
 <dl class="method">
 <dt id="gdocrevisions.operation.DeleteString.apply">
-<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.DeleteString.apply" title="Permalink to this definition">¶</a></dt>
+<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.DeleteString.apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete string from document between specified indices</p>
 </dd></dl>
 
@@ -164,12 +165,12 @@ A Revision contains an Operation</p>
 
 <dl class="class">
 <dt id="gdocrevisions.operation.InsertString">
-<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">InsertString</code><span class="sig-paren">(</span><em>operation_raw</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.InsertString" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">InsertString</code><span class="sig-paren">(</span><em>operation_raw</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.InsertString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gdocrevisions.operation.Operation" title="gdocrevisions.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">gdocrevisions.operation.Operation</span></code></a></p>
 <p>Operation subclass representing an “Insert String” operation</p>
 <dl class="method">
 <dt id="gdocrevisions.operation.InsertString.apply">
-<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.InsertString.apply" title="Permalink to this definition">¶</a></dt>
+<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.InsertString.apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert string into document at specified index</p>
 </dd></dl>
 
@@ -177,37 +178,59 @@ A Revision contains an Operation</p>
 
 <dl class="class">
 <dt id="gdocrevisions.operation.MultiOperation">
-<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">MultiOperation</code><span class="sig-paren">(</span><em>operation_raw</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.MultiOperation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">MultiOperation</code><span class="sig-paren">(</span><em>operation_raw</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.MultiOperation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gdocrevisions.operation.Operation" title="gdocrevisions.operation.Operation"><code class="xref py py-class docutils literal"><span class="pre">gdocrevisions.operation.Operation</span></code></a></p>
 <p>Operation subclass representing a “Multiple Operation” operation
 Contains an array of Operation objects</p>
 <dl class="method">
 <dt id="gdocrevisions.operation.MultiOperation.apply">
-<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em>, <em>revision=None</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.MultiOperation.apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply each of the suboperations comprising the MultiOperation</p>
+<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.MultiOperation.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply each of the operations comprising the MultiOperation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gdocrevisions.operation.MultiOperation.iter_operations">
+<code class="descname">iter_operations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.MultiOperation.iter_operations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator that iterates through base operations.
+Does a depth-first search of the operations tree,
+yielding leaf (non-Multioperation) nodes</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="gdocrevisions.operation.Operation">
-<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">Operation</code><span class="sig-paren">(</span><em>operation_raw</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.Operation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gdocrevisions.operation.</code><code class="descname">Operation</code><span class="sig-paren">(</span><em>operation_raw</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.Operation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Base Operation class
 Represents action(s) that occur as part of a revision</p>
 <dl class="method">
 <dt id="gdocrevisions.operation.Operation.apply">
-<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.Operation.apply" title="Permalink to this definition">¶</a></dt>
+<code class="descname">apply</code><span class="sig-paren">(</span><em>elements</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.Operation.apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>elements is a list of Element instances</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="gdocrevisions.operation.Operation.iter_operations">
+<code class="descname">iter_operations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.Operation.iter_operations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="gdocrevisions.operation.Operation.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.Operation.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="gdocrevisions.operation.getOperation">
-<code class="descclassname">gdocrevisions.operation.</code><code class="descname">getOperation</code><span class="sig-paren">(</span><em>operation_raw</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.getOperation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Factory method that returns Operation or subclass instance
-takes as input a single dict with change info</p>
+<dt id="gdocrevisions.operation.operation_factory">
+<code class="descclassname">gdocrevisions.operation.</code><code class="descname">operation_factory</code><span class="sig-paren">(</span><em>operation_raw</em>, <em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.operation.operation_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method that returns Operation or subclass instance</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd>operation_raw (dict): raw operation data
+revision (Revision): revision instance, which gets associated with any created Element objects</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -218,6 +241,11 @@ takes as input a single dict with change info</p>
 <em class="property">class </em><code class="descclassname">gdocrevisions.document.</code><code class="descname">Content</code><a class="headerlink" href="#gdocrevisions.document.Content" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Represents document content with a list of Element objects</p>
+<dl class="method">
+<dt id="gdocrevisions.document.Content.apply_operation">
+<code class="descname">apply_operation</code><span class="sig-paren">(</span><em>operation</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.Content.apply_operation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="gdocrevisions.document.Content.apply_revision">
 <code class="descname">apply_revision</code><span class="sig-paren">(</span><em>revision</em><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.document.Content.apply_revision" title="Permalink to this definition">¶</a></dt>
@@ -247,6 +275,11 @@ takes as input a single dict with change info</p>
 <dd><p>Bases: <a class="reference internal" href="#gdocrevisions.element.Element" title="gdocrevisions.element.Element"><code class="xref py py-class docutils literal"><span class="pre">gdocrevisions.element.Element</span></code></a></p>
 <p>Character element
 Represents a single character</p>
+<dl class="method">
+<dt id="gdocrevisions.element.Character.render">
+<code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.element.Character.render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -256,6 +289,19 @@ Represents a single character</p>
 <p>Base Element class. 
 Is a list element in a document’s content attribute.
 Associated with a revision</p>
+<dl class="method">
+<dt id="gdocrevisions.element.Element.render">
+<code class="descname">render</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gdocrevisions.element.Element.render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="gdocrevisions.element.EndOfBody">
+<em class="property">class </em><code class="descclassname">gdocrevisions.element.</code><code class="descname">EndOfBody</code><a class="headerlink" href="#gdocrevisions.element.EndOfBody" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gdocrevisions.element.Element" title="gdocrevisions.element.Element"><code class="xref py py-class docutils literal"><span class="pre">gdocrevisions.element.Element</span></code></a></p>
+<p>Dummy element indicating end of document body
+Separates main content from footnote text</p>
 </dd></dl>
 
 </div>
