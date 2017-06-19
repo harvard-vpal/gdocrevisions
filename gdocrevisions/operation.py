@@ -4,10 +4,10 @@ from element import Character
 def operation_factory(operation_raw, revision):
     """
     Factory method that returns Operation or subclass instance
+
     Arguments:
         operation_raw (dict): raw operation data
-        revision (Revision): revision instance, which gets associated
-            with any created Element objects
+        revision (Revision): revision instance, which gets associated with any created Element objects
     """
     operation_types = {
         'is': InsertString,
