@@ -45,9 +45,6 @@ class Revision(object):
             'revision_id',
             'session_id',
             'session_revision_index',
-            'raw',
-            'operation_raw',
             'operation',
-            'operations'
         ]
         return {attr:getattr(self,attr) for attr in DICT_ATTRIBUTES}
