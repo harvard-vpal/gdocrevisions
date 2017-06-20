@@ -29,6 +29,8 @@ class Revision(object):
         self.operation = operation_factory(self.operation_raw, self)
         # Iterator for operations
         self.iter_operations = self.operation.iter_operations
+        # Iterator for suboperations
+        self.iter_suboperations = self.operation.iter_suboperations
         
     @property
     def operations(self):

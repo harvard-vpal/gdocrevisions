@@ -138,6 +138,14 @@ class Document(object):
             for operation in revision.iter_operations():
                 yield operation
 
+    def iter_suboperations(self):
+        """
+        Generator that iterates over suboperations
+        """
+        for revision in self.revisions:
+            for suboperation in revision.iter_suboperations():
+                yield suboperation
+
     @property
     def operations(self):
         """

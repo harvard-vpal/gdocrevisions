@@ -109,5 +109,5 @@ class MultiOperation(Operation):
 
     def iter_suboperations(self):
         for operation in self.iter_operations():
-            for iter_suboperation in operation.iter_suboperations():
+            for suboperation in operation.iter_suboperations():
                 yield suboperation
