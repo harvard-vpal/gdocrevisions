@@ -16,7 +16,7 @@ class Character(Element):
 	Character element
 	Represents a single character
 	"""
-	def __init__(self, revision, char):
+	def __init__(self, char, revision):
 		# revision object reference
 		self.revision = revision
 		# character string
