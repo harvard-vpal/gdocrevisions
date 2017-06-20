@@ -43,6 +43,10 @@ class Operation(object):
     def iter_operations(self):
         yield self
 
+    def iter_suboperations(self):
+        for suboperation in self.suboperations:
+            yield suboperation
+
     def to_dict(self):
         DICT_ATTRIBUTES = [
             'type',
@@ -102,3 +106,8 @@ class MultiOperation(Operation):
                     yield operation
             else:
                 yield operation
+
+    def iter_suboperations(self):
+        for operation in self.iter_operations():
+            for iter_suboperation in operation.iter_suboperations():
+                yield suboperation
