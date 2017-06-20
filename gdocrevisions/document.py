@@ -23,20 +23,15 @@ class Content(object):
     def __init__(self):
         self.elements = [EndOfBody()]
 
-    def apply_operation(self, operation):
-        operation.apply(self.elements)
-
-    def apply_revision(self, revision):
+    def apply(self, change):
         """
-        apply a revision to content, by applying all of its operations
-        """
-        for operation in revision.operations:
-            self.apply_operation(operation)
+        Apply some change (could be a revision, operation, or suboperation) to the content elements
 
-    def apply_revisions(self, revisions):
-        for revision in revisions:
-            self.apply_revision(revision)
-    
+        Arguments:
+            change (Revision, Operation, or Suboperation): object whoses changes should be applied to the content instance
+        """
+        change.apply(self.elements)
+        
     def render(self):
         return ''.join([element.render() for element in self.elements])
 
@@ -70,7 +65,8 @@ class Document(object):
         # populate content by applying all revisions
         if apply_revisions:
             logger.debug("[Document.__init__()]: Applying revisions")
-            self.content.apply_revisions(self.revisions)
+            for revision in self.revisions:
+                self.content.apply(revision)
         logger.debug("[Document.__init__()]: Finished")
 
     def at_time(self, datetime):
@@ -79,7 +75,7 @@ class Document(object):
         """
         revisions = filter(lambda revision: revision.time<=datetime, self.revisions)
         self.content.reset()
-        self.content.apply_revisions(revisions)
+        self.content.apply(revisions)
         return self
 
     def at_revision(self, revision_id):
@@ -88,7 +84,7 @@ class Document(object):
         """
         revisions = filter(lambda revision: revision.revision_id<=revision_id, self.revisions)
         self.content.reset()
-        self.content.apply_revisions(revisions)
+        self.content.apply(revisions)
         return self
 
     def to_pickle(self, path):
@@ -121,11 +117,11 @@ class Document(object):
         content_state = Content()
         if by == 'operation':
             for revision in self.revisions:
-                content_state.apply_revision(revision)
+                content_state.apply(revision)
                 yield content_state
         elif by == 'revision':
             for operation in self.iter_operations():
-                content_state.apply_operation(operation)
+                content_state.apply(operation)
                 yield content_state
         else:
             raise ValueError("'by' not in accepted values (revision, operation)")
@@ -138,12 +134,28 @@ class Document(object):
             for operation in revision.iter_operations():
                 yield operation
 
+    def iter_suboperations(self):
+        """
+        Generator that iterates over suboperations
+        """
+        for revision in self.revisions:
+            for suboperation in revision.iter_suboperations():
+                yield suboperation
+
     @property
     def operations(self):
         """
-        Return a flattened array of revision operations
+        List of all operations that make up this document
+        (MultiOperations are flattened into their base operations)
         """
         return list(self.iter_operations())
+
+    @property
+    def suboperations(self):
+        """
+        List of all suboperations that make up this document
+        """
+        return list(self.iter_suboperations())
 
 
 class GoogleDoc(Document):

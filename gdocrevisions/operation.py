@@ -1,4 +1,5 @@
 from element import Character
+from suboperation import InsertElement, DeleteElement
 
 
 def operation_factory(operation_raw, revision):
@@ -27,18 +28,25 @@ class Operation(object):
         """
         operation_raw is a dictionary of raw operation metadata
         """
+        # could remove self.raw (dict) to save memory
         self.raw = operation_raw
         self.type = self.__class__.__name__
         self.revision = revision
+        self.suboperations = []
 
     def apply(self, elements):
         """
         elements is a list of Element instances
         """
-        pass
+        for suboperation in self.suboperations:
+            suboperation.apply(elements)
 
     def iter_operations(self):
         yield self
+
+    def iter_suboperations(self):
+        for suboperation in self.suboperations:
+            yield suboperation
 
     def to_dict(self):
         DICT_ATTRIBUTES = [
@@ -56,14 +64,8 @@ class InsertString(Operation):
         super(InsertString, self).__init__(operation_raw, revision)
         self.string = operation_raw['s']
         self.start_index = operation_raw['ibi']
-        self.elements = [Character(self.revision, char) for char in self.string]
-
-    def apply(self, elements):
-        """
-        Insert string into document at specified index
-        """
-        for i,element in enumerate(self.elements):
-            elements.insert(self.start_index-1+i, element)
+        # self.elements = [Character(self.revision, char) for char in self.string]
+        self.suboperations = [InsertElement(self.start_index+i, Character(char, self.revision)) for i,char in enumerate(self.string)]
 
 
 class DeleteString(Operation):
@@ -74,13 +76,7 @@ class DeleteString(Operation):
         super(DeleteString, self).__init__(operation_raw, revision)
         self.start_index = operation_raw['si']
         self.end_index = operation_raw['ei']
-
-    def apply(self, elements):
-        """
-        Delete string from document between specified indices
-        """
-        for i in range(self.end_index-self.start_index+1):
-            elements.pop(self.start_index-1)
+        self.suboperations = [DeleteElement(self.end_index-i) for i in range(self.end_index-self.start_index+1)]
 
 
 class MultiOperation(Operation):
@@ -111,3 +107,8 @@ class MultiOperation(Operation):
                     yield operation
             else:
                 yield operation
+
+    def iter_suboperations(self):
+        for operation in self.iter_operations():
+            for suboperation in operation.iter_suboperations():
+                yield suboperation

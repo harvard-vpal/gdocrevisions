@@ -29,14 +29,33 @@ class Revision(object):
         self.operation = operation_factory(self.operation_raw, self)
         # Iterator for operations
         self.iter_operations = self.operation.iter_operations
+        # Iterator for suboperations
+        self.iter_suboperations = self.operation.iter_suboperations
         
     @property
     def operations(self):
         """
-        Array of operations, with no multi operations
+        List of operations that make up this revision
+        (MultiOperations are flattened into their base operations)
         """
         return list(self.iter_operations())
-        
+
+    @property
+    def suboperations(self):
+        """
+        List of suboperations that make up this revision
+        """
+        return list(self.iter_suboperations())
+
+    def apply(self, elements):
+        """
+        Apply the revision to a list of elements
+
+        Arguments:
+            elements (list): usually the elements attribute of a Content instance
+        """
+        for operation in self.iter_operations():
+            operation.apply(elements)
         
     def to_dict(self):
         DICT_ATTRIBUTES = [
