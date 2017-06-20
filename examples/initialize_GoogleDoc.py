@@ -12,7 +12,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIAL_FILE, 
 
 gdoc = gdoc_revisions.GoogleDoc(FILE_ID, credentials)
 
-gdoc.metadata
-gdoc.revisions
-gdoc.revisions[0].operation
+# gdoc.metadata
+# gdoc.revisions
+# gdoc.revisions[0].operation
 ```
