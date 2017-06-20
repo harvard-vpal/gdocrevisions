@@ -29,6 +29,8 @@ class Revision(object):
         self.operation = operation_factory(self.operation_raw, self)
         # Iterator for operations
         self.iter_operations = self.operation.iter_operations
+        # Iterator for suboperations
+        self.iter_suboperations = self.operation.iter_suboperations
         
     @property
     def operations(self):
@@ -37,6 +39,15 @@ class Revision(object):
         """
         return list(self.iter_operations())
         
+    def apply(self, elements):
+        """
+        Apply the revision to a list of elements
+
+        Arguments:
+            elements (list): usually the elements attribute of a Content instance
+        """
+        for operation in self.iter_operations():
+            operation.apply(elements)
         
     def to_dict(self):
         DICT_ATTRIBUTES = [
