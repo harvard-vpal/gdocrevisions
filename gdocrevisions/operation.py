@@ -28,6 +28,7 @@ class Operation(object):
         """
         operation_raw is a dictionary of raw operation metadata
         """
+        # could remove self.raw (dict) to save memory
         self.raw = operation_raw
         self.type = self.__class__.__name__
         self.revision = revision

@@ -145,9 +145,17 @@ class Document(object):
     @property
     def operations(self):
         """
-        Return a flattened array of revision operations
+        List of all operations that make up this document
+        (MultiOperations are flattened into their base operations)
         """
         return list(self.iter_operations())
+
+    @property
+    def suboperations(self):
+        """
+        List of all suboperations that make up this document
+        """
+        return list(self.iter_suboperations())
 
 
 class GoogleDoc(Document):
