@@ -4,19 +4,16 @@ from collections import Counter, namedtuple
 FILE_ID = ...
 gdoc = gdocrevisions.GoogleDoc(FILE_ID, ...)
 
-
 content_state = gdocrevisions.Content()
 counter = Counter()
-Pair = namedtuple('Pair',['deleter','author'])
-
+Deletions = namedtuple('Deletions',['deleter','author'])
 
 for revision in gdoc.revisions:
-    for operation in revision.operations:
-        if operation.__class__.__name__ == 'DeleteString':
-            for i in range(operation.start_index-1,operation.end_index):
-                deleter = revision.user_id
-                author = content_state.elements[i].revision.user_id
-                counter[Pair(deleter=deleter, author=author)]+=1
-        content_state.apply_operation(operation)
-    
+    for suboperation in revision.iter_suboperations():
+        if suboperation.type == 'DeleteElement':
+            deleter = revision.user_id
+            author = content_state.elements[suboperation.index-1].revision.user_id
+            counter[Deletions(deleter=deleter, author=author)]+=1
+        content_state.apply(suboperation)
+        
 print counter
