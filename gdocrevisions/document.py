@@ -163,7 +163,7 @@ class GoogleDoc(Document):
     Google doc class
     Contains document metadata and revision history
     """
-    def __init__(self, file_id, credentials=None, keyfile=None, **kwargs):
+    def __init__(self, file_id, credentials=None, keyfile=None, metadata=True, **kwargs):
         """
         Create a GoogleDoc instance
         Requires either credentials or keyfile arguments to be specified
@@ -172,14 +172,15 @@ class GoogleDoc(Document):
             file_id (str): ID string that can be found in the Google Doc URL
             credentials (oauth2client.OAuth2Credentals): credentials object
             keyfile (str): Path to a service account json keyfile
+            metadata (bool): Whether to fetch additional doc-level metadata, e.g. title
         """
         logger.debug("[GoogleDoc.__init__()]: Start")
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
         self.credentials = self._get_credentials(credentials, keyfile)
         # dictionary of document metadata via Google API
-        self.metadata = self._gdrive_api().files().get(fileId=file_id).execute()
+        self.metadata = self._gdrive_api().files().get(fileId=file_id).execute() if metadata else None
         # doc title
-        self.name = self.metadata['name']
+        self.name = self.metadata['name'] if metadata else None
         # file identifier string from the URL
         self.file_id = file_id
         # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
