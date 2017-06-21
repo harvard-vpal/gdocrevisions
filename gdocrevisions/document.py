@@ -10,11 +10,26 @@ import logging
 from element import EndOfBody
 from oauth2client.client import OAuth2Credentials
 from oauth2client.service_account import ServiceAccountCredentials
-
-logger = logging.getLogger('gdocrevisions')
+from timeit import default_timer as timer
 
 # suppress warnings from google api client library
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
+
+
+def timeit(method):
+    """
+    Decorator for timing an instance method and recording elapsed time in self.times (dict)
+    """
+    def timed(*args, **kwargs):
+        start = timer()
+        result = method(*args, **kwargs)
+        stop = timer()
+        # args[0] is self
+        args[0]._times[method.__name__] = stop-start
+        return result
+
+    return timed
+
 
 class Content(object):
     """
@@ -56,18 +71,19 @@ class Document(object):
             revisions (list): list of revision objects
             latest (bool): indicates whether to build the content state on initialization
         """
-        logger.debug("[Document.__init__()]: Start")
+        self._times = getattr(self, '_times', {})
         self.revisions = revisions
         """ List of Revision objects """
         self.content = Content()
         """ Content object """
         self.current_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
         # populate content by applying all revisions
-        if apply_revisions:
-            logger.debug("[Document.__init__()]: Applying revisions")
-            for revision in self.revisions:
-                self.content.apply(revision)
-        logger.debug("[Document.__init__()]: Finished")
+        if apply_revisions: self._apply_all_revisions()
+
+    @timeit
+    def _apply_all_revisions(self):
+        for revision in self.revisions:
+            self.content.apply(revision)
 
     def at_time(self, datetime):
         """
@@ -174,22 +190,23 @@ class GoogleDoc(Document):
             keyfile (str): Path to a service account json keyfile
             metadata (bool): Whether to fetch additional doc-level metadata, e.g. title
         """
-        logger.debug("[GoogleDoc.__init__()]: Start")
+        # used by _record_time for recording timing information
+        self._times = {}
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
         self.credentials = self._get_credentials(credentials, keyfile)
         # dictionary of document metadata via Google API
-        self.metadata = self._gdrive_api().files().get(fileId=file_id).execute() if metadata else None
+        self.metadata = self._fetch_metadata if metadata else None
         # doc title
-        self.name = self.metadata['name'] if metadata else None
+        # self.name = self.metadata['name'] if metadata else None
         # file identifier string from the URL
         self.file_id = file_id
         # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
         self.revisions_raw = self._download_revision_details()
         # array of Revision objects
-        logger.debug("[GoogleDoc.__init__()]: Initializing revisions")
-        revisions = [Revision(r) for r in self.revisions_raw['changelog']]
+        revisions = self._build_revisions()
         # initialize Document attributes
         super(GoogleDoc, self).__init__(revisions, **kwargs)
+
 
     def _get_credentials(self, credentials, keyfile):
         if credentials:
@@ -209,6 +226,13 @@ class GoogleDoc(Document):
         """
         return build('drive', 'v3', credentials=self.credentials)
         
+    @timeit
+    def _fetch_metadata(self):
+        """
+        Fetch a dictionary of document-level metadata via Google API
+        """
+        return self._gdrive_api().files().get(fileId=file_id).execute()
+
     def _last_revision_id(self):
         """
         Return the id of the last revision to a document, using the offical google api v3
@@ -228,6 +252,7 @@ class GoogleDoc(Document):
         url = base_url.format(file_id=self.file_id,start=start,end=end)
         return url
 
+    @timeit
     def _download_revision_details(self):
         """
         download json-like data with revision info
@@ -238,6 +263,10 @@ class GoogleDoc(Document):
         raw_text = http_auth.request(url)[1][5:]
         return json.loads(raw_text)
 
+    @timeit
+    def _build_revisions(self):
+        return [Revision(r) for r in self.revisions_raw['changelog']]
+        
 
 def read_pickle(path):
     """
