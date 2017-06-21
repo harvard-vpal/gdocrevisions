@@ -214,8 +214,9 @@ class GoogleDoc(Document):
         Return the id of the last revision to a document, using the offical google api v3
         """
         revision_metainfo = self._gdrive_api().revisions().list(fileId=self.file_id).execute()
-        if len(revision_metainfo['revisions']) == 1:
-            return revision_metainfo['revisions'][0]['id']
+        if len(revision_metainfo['revisions']) == 0:
+            # detailed metadata endpoint will have a revision corresponding to doc creation
+            return 1
         else:
             return revision_metainfo['revisions'][-1]['id']
     
