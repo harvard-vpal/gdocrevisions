@@ -1,8 +1,10 @@
 import gdocrevisions
 from collections import Counter, namedtuple
 
-FILE_ID = ...
-gdoc = gdocrevisions.GoogleDoc(FILE_ID, ...)
+FILE_ID = "" # fill in google doc file id
+KEYFILE = "" # fill in keyfile path/filename
+
+gdoc = gdocrevisions.GoogleDoc(FILE_ID, keyfile=KEYFILE)
 
 content_state = gdocrevisions.Content()
 counter = Counter()
