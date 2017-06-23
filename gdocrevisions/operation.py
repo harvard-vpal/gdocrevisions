@@ -37,7 +37,10 @@ class Operation(object):
 
     def apply(self, elements):
         """
-        elements is a list of Element instances
+        Apply this operation to document content elements
+        
+        Arguments:
+            elements (list): list of Elements
         """
         for suboperation in self.suboperations:
             suboperation.apply(elements)
@@ -94,6 +97,9 @@ class MultiOperation(Operation):
     def apply(self, elements):
         """
         Apply each of the operations comprising the MultiOperation
+
+        Arguments:
+            elements (list): list of Elements
         """
         for operation in self.operations:
             self.operation.apply(elements)

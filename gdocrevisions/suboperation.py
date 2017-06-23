@@ -8,7 +8,8 @@ class Suboperation(object):
     __slots__ = ('element')
     def __init__(self, element):
         """
-        operation_raw is a dictionary of raw operation metadata
+        Arguments:
+            element (Element): element associated with this suboperation
         """
         self.element = element
 
@@ -18,7 +19,7 @@ class Suboperation(object):
 
     def apply(self, elements):
         """
-        elements is a list of Element instances
+        Apply this suboperation to document content elements
         """
         pass
 
@@ -29,10 +30,18 @@ class InsertElement(Suboperation):
     """
     __slots__ = ('index','element')
     def __init__(self, index, element):
+        """
+        Arguments:
+            index (int): document index (1-indexed) where insertion occurs
+            element (Element): element to insert
+        """
         self.index = index
         self.element = element
 
     def apply(self, elements):
+        """
+        Apply this suboperation to document content elements
+        """
         elements.insert(self.index-1,self.element)
 
 
@@ -40,8 +49,12 @@ class DeleteElement(Suboperation):
     """
     Delete Character Suboperation class
     """
-    __slots__ = ('index')
+    __slots__ = ('')
     def __init__(self, index):
+        """
+        Arguments:
+            index (int): document index (1-indexed) where deletion occurs
+        """
         self.index = index
         # self.element = element
 
