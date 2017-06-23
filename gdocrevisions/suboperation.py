@@ -49,7 +49,7 @@ class DeleteElement(Suboperation):
     """
     Delete Character Suboperation class
     """
-    __slots__ = ('')
+    __slots__ = ('index')
     def __init__(self, index):
         """
         Arguments:
