@@ -17,14 +17,26 @@ class Character(Element):
 	Character element
 	Represents a single character
 	"""
-	__slots__ = ('revision','char')
+	__slots__ = ('char', 'revision_insert','revision_delete')
 	def __init__(self, char, revision):
-		# revision object reference
-		self.revision = revision
 		# character string
 		self.char = char
+		# revision in which element is created
+		self.revision_insert = revision
+		# placeholder for revision in which element is deleted
+		self.revision_delete = None
+
+	@property
+	def revision(self):
+		"""
+		Alias for revision_insert attribute
+		"""
+		return self.revision_insert
 
 	def render(self):
+		"""
+		Render this element, typically called by content.render()
+		"""
 		return self.char
 
 

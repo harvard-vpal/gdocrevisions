@@ -43,9 +43,18 @@ class Content(object):
         Apply some change (could be a revision, operation, or suboperation) to the content elements
 
         Arguments:
-            change (Revision, Operation, or Suboperation): object whoses changes should be applied to the content instance
+            change (Revision, Operation, or Suboperation): object whose changes should be applied to the content instance
         """
         change.apply(self.elements)
+
+    def undo(self, change):
+        """
+        Undo some change (could be a revision, operation, or suboperation) to the content elements
+
+        Arguments:
+            change (Revision, Operation, or Suboperation): object whose changes should be undone from the content instance
+        """
+        change.undo(self.elements)
         
     def render(self):
         return ''.join([element.render() for element in self.elements])
@@ -57,28 +66,21 @@ class Content(object):
 class Document(object):
     """
     Basic Document class
-
-    Attributes:
-        revisions
-        content
-        current_revision_id
-        operations
-        sessions
     """
-    def __init__(self, revisions, apply_revisions=True):
+    def __init__(self, revisions):
         """
         Arguments:
-            revisions (list): list of revision objects
-            latest (bool): indicates whether to build the content state on initialization
+            revisions (list): list of Revision objects
         """
         self._times = getattr(self, '_times', {})
         self.revisions = revisions
         """ List of Revision objects """
         self.content = Content()
         """ Content object """
-        self.current_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
+        self.latest_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
         # populate content by applying all revisions
-        if apply_revisions: self._apply_all_revisions()
+        # this also populates the elements on delete suboperations
+        self._apply_all_revisions()
 
     @timeit
     def _apply_all_revisions(self):

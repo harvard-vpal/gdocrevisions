@@ -23,6 +23,12 @@ class Suboperation(object):
         """
         pass
 
+    def undo(self, elements):
+        """
+        Undo this suboperation from document content elements
+        """
+        pass
+
 
 class InsertElement(Suboperation):
     """
@@ -40,26 +46,40 @@ class InsertElement(Suboperation):
 
     def apply(self, elements):
         """
-        Apply this suboperation to document content elements
+        Apply this insertion suboperation to document content elements
         """
         elements.insert(self.index-1,self.element)
+
+    def undo(self, elements):
+        """
+        Undo this insertion suboperation from document content elements
+        """
+        elements.pop(self.index-1)
 
 
 class DeleteElement(Suboperation):
     """
     Delete Character Suboperation class
     """
-    __slots__ = ('index')
+    __slots__ = ('index', 'element')
     def __init__(self, index):
         """
         Arguments:
             index (int): document index (1-indexed) where deletion occurs
         """
         self.index = index
-        # self.element = element
+        # this gets populated on first use of apply
+        self.element = None
 
     def apply(self, elements):
-        element = elements.pop(self.index-1)
+        """
+        Apply this deletion suboperation to docuement content elements
+        Also save the element that was deleted in the suboperation's element attribute
+        """
+        self.element = elements.pop(self.index-1)
 
-        # TODO could modify popped element here?
-        # would revision need to be passed in then?
+    def undo(self, elements):
+        """
+        Undo this deletion suboperation from document content elements
+        """
+        elements.insert(self.index-1,self.element)

@@ -45,6 +45,17 @@ class Operation(object):
         for suboperation in self.suboperations:
             suboperation.apply(elements)
 
+    def undo(self, elements):
+        """
+        Undo this element from document content elements
+        
+        Arguments:
+            elements (list): list of Elements
+        """
+        for suboperation in reversed(self.suboperations):
+            suboperation.undo(elements)
+
+
     def iter_operations(self):
         yield self
 
@@ -102,7 +113,17 @@ class MultiOperation(Operation):
             elements (list): list of Elements
         """
         for operation in self.operations:
-            self.operation.apply(elements)
+            operation.apply(elements)
+
+    def undo(self, elements):
+        """
+        Undo each of the operations comprising the MultiOperation
+
+        Arguments:
+            elements (list): list of Elements
+        """
+        for operation in reversed(self.operations):
+            operation.undo(elements)
 
     def iter_operations(self):
         """
