@@ -9,7 +9,10 @@ class Revision(object):
     https://developers.google.com/drive/v3/reference/revisions
     A Revision contains an Operation
     """
-
+    __slots__ = (
+        'time','user_id','revision_id','session_id','session_revision_index',
+        'raw','operation_raw','operation','iter_operations','iter_suboperations'
+    )
     def __init__(self, revision_raw):
         # timestamp
         self.time = datetime.fromtimestamp(revision_raw[1] / 1e3)

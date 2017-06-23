@@ -5,6 +5,7 @@ class Suboperation(object):
     Base Suboperation class
     Represents action that are associated with single Element
     """
+    __slots__ = ('element')
     def __init__(self, element):
         """
         operation_raw is a dictionary of raw operation metadata
@@ -26,6 +27,7 @@ class InsertElement(Suboperation):
     """
     Insert Character Suboperation class
     """
+    __slots__ = ('index','element')
     def __init__(self, index, element):
         self.index = index
         self.element = element
@@ -38,6 +40,7 @@ class DeleteElement(Suboperation):
     """
     Delete Character Suboperation class
     """
+    __slots__ = ('index')
     def __init__(self, index):
         self.index = index
         # self.element = element

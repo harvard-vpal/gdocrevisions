@@ -4,6 +4,7 @@ class Element(object):
 	Is a list element in a document's content attribute.
 	Associated with a revision
 	"""
+	__slots__ = ('revision')
 	def __init__(self, revision):
 		self.revision = revision
 
@@ -16,6 +17,7 @@ class Character(Element):
 	Character element
 	Represents a single character
 	"""
+	__slots__ = ('revision','char')
 	def __init__(self, char, revision):
 		# revision object reference
 		self.revision = revision
@@ -31,5 +33,6 @@ class EndOfBody(Element):
 	Dummy element indicating end of document body
 	Separates main content from footnote text
 	"""
+	__slots__ = ()
 	def __init__(self):
 		pass
