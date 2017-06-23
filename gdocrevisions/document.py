@@ -100,7 +100,8 @@ class Document(object):
         """
         revisions = filter(lambda revision: revision.revision_id<=revision_id, self.revisions)
         self.content.reset()
-        self.content.apply(revisions)
+        for revision in revisions:
+            self.content.apply(revision)
         return self
 
     def to_pickle(self, path):
