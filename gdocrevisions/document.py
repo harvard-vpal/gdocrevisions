@@ -269,7 +269,7 @@ class GoogleDoc(Document):
     @timeit
     def _build_revisions(self):
         return [Revision(r) for r in self.revisions_raw['changelog']]
-        
+
 
 def read_pickle(path):
     """
