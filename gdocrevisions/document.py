@@ -197,12 +197,12 @@ class GoogleDoc(Document):
         self._times = {}
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
         self.credentials = self._get_credentials(credentials, keyfile)
-        # dictionary of document metadata via Google API
-        self.metadata = self._fetch_metadata if metadata else None
-        # doc title
-        # self.name = self.metadata['name'] if metadata else None
         # file identifier string from the URL
         self.file_id = file_id
+        # dictionary of document metadata via Google API
+        self.metadata = self._fetch_metadata() if metadata else None
+        # document title
+        self.name = self.metadata['name'] if metadata else None
         # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
         self.revisions_raw = self._download_revision_details()
         # array of Revision objects
