@@ -234,7 +234,7 @@ class GoogleDoc(Document):
         """
         Fetch a dictionary of document-level metadata via Google API
         """
-        return self._gdrive_api().files().get(fileId=file_id).execute()
+        return self._gdrive_api().files().get(fileId=self.file_id).execute()
 
     def _last_revision_id(self):
         """
