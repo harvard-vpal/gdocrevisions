@@ -72,6 +72,7 @@ class Document(object):
         Arguments:
             revisions (list): list of Revision objects
         """
+        # used to store execution times for performance testing
         self._times = getattr(self, '_times', {})
         self.revisions = revisions
         """ List of Revision objects """
@@ -193,7 +194,7 @@ class GoogleDoc(Document):
             fetch_metadata (bool): Flag indicating whether to fetch additional doc-level metadata, e.g. title
         """
 
-        # used by _record_time for recording timing information
+        # used to store execution times for performance testing
         self._times = {}
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
         self.credentials = credentials
