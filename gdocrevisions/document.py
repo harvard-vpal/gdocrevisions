@@ -267,4 +267,3 @@ def read_pickle(path):
     with open(path, 'rb') as f:
         document = pickle.load(f)
     return document
-
