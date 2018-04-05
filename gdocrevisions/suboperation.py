@@ -1,11 +1,13 @@
 from element import Character
 
+
 class Suboperation(object):
     """
     Base Suboperation class
     Represents action that are associated with single Element
     """
     __slots__ = ('element')
+
     def __init__(self, element):
         """
         Arguments:
@@ -35,6 +37,7 @@ class InsertElement(Suboperation):
     Insert Character Suboperation class
     """
     __slots__ = ('index','element')
+
     def __init__(self, index, element):
         """
         Arguments:
@@ -62,6 +65,7 @@ class DeleteElement(Suboperation):
     Delete Character Suboperation class
     """
     __slots__ = ('index', 'element')
+
     def __init__(self, index):
         """
         Arguments:

@@ -1,5 +1,6 @@
 from document import Document, Content
 
+
 class RevisionReplayer(object):
     """
     Document/content wrapper optimized for stepping forwards and backwards through revisions

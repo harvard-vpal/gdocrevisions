@@ -5,6 +5,7 @@ class Element(object):
     Associated with a revision
     """
     __slots__ = ('revision')
+
     def __init__(self, revision):
         self.revision = revision
 
@@ -18,6 +19,7 @@ class Character(Element):
     Represents a single character
     """
     __slots__ = ('char', 'revision_insert','revision_delete')
+
     def __init__(self, char, revision):
         # character string
         self.char = char
@@ -46,5 +48,6 @@ class EndOfBody(Element):
     Separates main content from footnote text
     """
     __slots__ = ()
+
     def __init__(self):
         pass

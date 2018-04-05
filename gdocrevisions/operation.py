@@ -24,7 +24,8 @@ class Operation(object):
     Base Operation class
     Represents action(s) that occur as part of a revision
     """
-    __slots__ = ('raw', 'type','revision','suboperations')
+    __slots__ = ('raw', 'type', 'revision', 'suboperations')
+
     def __init__(self, operation_raw, revision):
         """
         operation_raw is a dictionary of raw operation metadata
@@ -55,7 +56,6 @@ class Operation(object):
         for suboperation in reversed(self.suboperations):
             suboperation.undo(elements)
 
-
     def iter_operations(self):
         yield self
 
@@ -68,14 +68,15 @@ class Operation(object):
             'type',
             'revision',
         ]
-        return {attr:getattr(self,attr) for attr in DICT_ATTRIBUTES}
+        return {attr: getattr(self, attr) for attr in DICT_ATTRIBUTES}
 
 
 class InsertString(Operation):
     """
     Operation subclass representing an "Insert String" operation
     """
-    __slots__ = ('raw','type','revision','string','start_index','suboperations')
+    __slots__ = ('raw', 'type', 'revision', 'string', 'start_index', 'suboperations')
+
     def __init__(self, operation_raw, revision):
         super(InsertString, self).__init__(operation_raw, revision)
         self.string = operation_raw['s']
@@ -87,7 +88,8 @@ class DeleteString(Operation):
     """
     Operation subclass representing a "Delete String" operation
     """
-    __slots__ = ('raw','type','revision','start_index','end_index','suboperations')
+    __slots__ = ('raw', 'type', 'revision', 'start_index', 'end_index', 'suboperations')
+
     def __init__(self, operation_raw, revision):
         super(DeleteString, self).__init__(operation_raw, revision)
         self.start_index = operation_raw['si']
@@ -100,7 +102,8 @@ class MultiOperation(Operation):
     Operation subclass representing a "Multiple Operation" operation
     Contains an array of Operation objects
     """
-    __slots__ = ('raw','type','revision','operations','suboperations')
+    __slots__ = ('raw', 'type', 'revision', 'operations', 'suboperations')
+
     def __init__(self, operation_raw, revision):
         super(MultiOperation, self).__init__(operation_raw, revision)
         self.operations = [operation_factory(operation_raw, revision) for operation_raw in operation_raw['mts']]
