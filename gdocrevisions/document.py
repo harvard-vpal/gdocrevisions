@@ -1,16 +1,16 @@
-from apiclient.discovery import build
-from httplib2 import Http
 import json
+import pickle
+import logging
+from timeit import default_timer as timer
+from collections import defaultdict
+
+from apiclient.discovery import build
+from google.auth.transport.requests import AuthorizedSession
+
 from revision import Revision
 from session import Session
-import pickle
-from collections import defaultdict
-import copy
-import logging
 from element import EndOfBody
-from oauth2client.client import OAuth2Credentials
-from oauth2client.service_account import ServiceAccountCredentials
-from timeit import default_timer as timer
+
 
 # suppress warnings from google api client library
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
@@ -182,21 +182,21 @@ class GoogleDoc(Document):
     Google doc class
     Contains document metadata and revision history
     """
-    def __init__(self, file_id, credentials=None, keyfile=None, metadata=True, **kwargs):
+    def __init__(self, file_id, credentials, metadata=True, **kwargs):
         """
         Create a GoogleDoc instance
         Requires either credentials or keyfile arguments to be specified
 
         Arguments:
             file_id (str): ID string that can be found in the Google Doc URL
-            credentials (oauth2client.OAuth2Credentals): credentials object
-            keyfile (str): Path to a service account json keyfile
-            metadata (bool): Whether to fetch additional doc-level metadata, e.g. title
+            credentials (google.auth.credentials.Credentials): Credentials object
+            fetch_metadata (bool): Flag indicating whether to fetch additional doc-level metadata, e.g. title
         """
+
         # used by _record_time for recording timing information
         self._times = {}
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
-        self.credentials = self._get_credentials(credentials, keyfile)
+        self.credentials = credentials
         # file identifier string from the URL
         self.file_id = file_id
         # dictionary of document metadata via Google API
@@ -209,19 +209,6 @@ class GoogleDoc(Document):
         revisions = self._build_revisions()
         # initialize Document attributes
         super(GoogleDoc, self).__init__(revisions, **kwargs)
-
-
-    def _get_credentials(self, credentials, keyfile):
-        if credentials:
-            if isinstance(credentials, OAuth2Credentials):
-                return credentials
-            else:
-                raise TypeError("Credential object is not a valid OAuth2Credentials object")
-        elif keyfile:
-            scope = ['https://www.googleapis.com/auth/drive']
-            return ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
-        else:
-            raise ValueError("No credentials provided")
 
     def _gdrive_api(self):
         """
@@ -260,11 +247,12 @@ class GoogleDoc(Document):
         """
         download json-like data with revision info
         """
-        http_auth = self.credentials.authorize(Http())
         last_revision_id = self._last_revision_id()
         url = self._generate_revision_url(start=1,end=last_revision_id)
-        raw_text = http_auth.request(url)[1][5:]
-        return json.loads(raw_text)
+        response = AuthorizedSession(self.credentials).get(url)
+        response.raise_for_status()
+        data = json.loads(response.text[5:])
+        return data
 
     @timeit
     def _build_revisions(self):

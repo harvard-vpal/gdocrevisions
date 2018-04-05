@@ -15,17 +15,17 @@ pip install gdocrevisions
 
 ## Example usage
 ```
+from google.oauth2 import service_account
 import gdocrevisions
-from oauth2client.service_account import ServiceAccountCredentials
-
-# Specify the service account credentials file
-CREDENTIAL_FILE = 'my-credentials.json'
-scope = ['https://www.googleapis.com/auth/drive']
-credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIAL_FILE, scope)
 
 # The file id can be found in the URL
 # e.g. https://docs.google.com/document/d/<FILE_ID>
 FILE_ID = 'abcdefg12345'
+
+# Specify the service account credentials file
+CREDENTIAL_FILE = 'my-credentials.json'
+SCOPE = ['https://www.googleapis.com/auth/drive']
+credentials = service_account.Credentials.from_service_account_file(CREDENTIAL_FILE, scopes=SCOPE)
 
 # Initialize a GoogleDoc object instance, which retrieves revision data 
 gdoc = gdocrevisions.GoogleDoc(FILE_ID, credentials)
