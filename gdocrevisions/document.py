@@ -187,7 +187,7 @@ class GoogleDoc(Document):
         Create a GoogleDoc instance
         Requires either credentials or keyfile arguments to be specified
 
-        Args:
+        Arguments:
             file_id (str): ID string that can be found in the Google Doc URL
             credentials (google.auth.credentials.Credentials): Credentials object
             fetch_metadata (bool): Flag indicating whether to fetch additional doc-level metadata, e.g. title
