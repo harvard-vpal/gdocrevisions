@@ -182,7 +182,7 @@ class GoogleDoc(Document):
     Google doc class
     Contains document metadata and revision history
     """
-    def __init__(self, file_id, credentials, metadata=True, **kwargs):
+    def __init__(self, file_id, credentials, fetch_metadata=True, **kwargs):
         """
         Create a GoogleDoc instance
         Requires either credentials or keyfile arguments to be specified
@@ -200,9 +200,9 @@ class GoogleDoc(Document):
         # file identifier string from the URL
         self.file_id = file_id
         # dictionary of document metadata via Google API
-        self.metadata = self._fetch_metadata() if metadata else None
+        self.metadata = self._fetch_metadata() if fetch_metadata else None
         # document title
-        self.name = self.metadata['name'] if metadata else None
+        self.name = self.metadata['name'] if self.metadata else None
         # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
         self.revisions_raw = self._download_revision_details()
         # array of Revision objects
