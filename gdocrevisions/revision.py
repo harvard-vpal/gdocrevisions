@@ -1,6 +1,8 @@
+from __future__ import absolute_import
+
 from datetime import datetime
 
-from operation import operation_factory
+from .operation import operation_factory
 
 
 class Revision(object):

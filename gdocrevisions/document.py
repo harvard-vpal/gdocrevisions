@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import json
 import pickle
 import logging
@@ -7,9 +9,9 @@ from collections import defaultdict
 from apiclient.discovery import build
 from google.auth.transport.requests import AuthorizedSession
 
-from revision import Revision
-from session import Session
-from element import EndOfBody
+from .revision import Revision
+from .session import Session
+from .element import EndOfBody
 
 
 # suppress warnings from google api client library

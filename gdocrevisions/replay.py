@@ -1,4 +1,6 @@
-from document import Document, Content
+from __future__ import absolute_import
+
+from .document import Document, Content
 
 
 class RevisionReplayer(object):

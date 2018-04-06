@@ -1,4 +1,6 @@
-from element import Character, SUGGEST_INSERT, SUGGEST_DELETE, SUGGEST_NONE
+from __future__ import absolute_import
+
+from .element import Character, SUGGEST_INSERT, SUGGEST_DELETE, SUGGEST_NONE
 
 
 def operation_factory(operation_raw, revision):
