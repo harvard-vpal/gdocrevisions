@@ -40,21 +40,12 @@ class Content(object):
 
     def apply(self, change):
         """
-        Apply some change (could be a revision, operation, or suboperation) to the content elements
+        Apply some change (could be a revision or operation) to the content elements
 
         Arguments:
-            change (Revision, Operation, or Suboperation): object whose changes should be applied to the content instance
+            change (Revision or Operation instance): object whose changes should be applied to the content instance
         """
         change.apply(self.elements)
-
-    def undo(self, change):
-        """
-        Undo some change (could be a revision, operation, or suboperation) to the content elements
-
-        Arguments:
-            change (Revision, Operation, or Suboperation): object whose changes should be undone from the content instance
-        """
-        change.undo(self.elements)
         
     def render(self):
         return ''.join([element.render() for element in self.elements])

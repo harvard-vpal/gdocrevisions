@@ -60,14 +60,6 @@ class Revision(object):
         """
         self.operation.apply(elements)
 
-    def undo(self, elements):
-        """
-        Undo the revision to list of elements
-
-        Arguments:
-            elements (list): usually  the elements attribute of a Content instance
-        """
-        self.operation.undo(elements)
 
     def to_dict(self):
         DICT_ATTRIBUTES = [

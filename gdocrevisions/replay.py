@@ -22,12 +22,7 @@ class RevisionReplayer(object):
         if target is ahead of current state, apply
         if its ahead of target revision, undo
         """
-        if self.current_revision_id < target_revision_id:
-            for revision in self.document.revisions[self.current_revision_id+1:target_revision_id+1]:
-                self.content.apply(revision)
-
-        elif self.current_revision_id > target_revision_id:
-            for revision in reversed(self.document.revisions[target_revision_id+1:self.current_revision_id+1]):
-                self.content.undo(revision)
+        for revision in self.document.revisions[self.current_revision_id+1:target_revision_id+1]:
+            self.content.apply(revision)
 
         self.current_revision_id = target_revision_id
