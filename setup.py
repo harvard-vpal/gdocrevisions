@@ -13,5 +13,6 @@ setup(
         'google-auth==1.4.1',
         'google-api-python-client==1.6.6',
         'google-auth-httplib2==0.0.3',  # required for using google.auth credentials with google-api-python-client
+        'requests==2.18.1',
     ],
 )
