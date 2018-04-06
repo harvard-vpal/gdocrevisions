@@ -14,7 +14,7 @@ class Revision(object):
     """
     __slots__ = (
         'time', 'user_id', 'revision_id', 'session_id', 'session_revision_index',
-        'raw', 'operation_raw', 'operation', 'iter_operations', 'iter_suboperations'
+        'raw', 'operation_raw', 'operation', 'iter_operations'
     )
 
     def __init__(self, revision_raw):
@@ -36,8 +36,6 @@ class Revision(object):
         self.operation = operation_factory(self.operation_raw, self)
         # Iterator for operations
         self.iter_operations = self.operation.iter_operations
-        # Iterator for suboperations
-        self.iter_suboperations = self.operation.iter_suboperations
         
     @property
     def operations(self):
@@ -46,13 +44,6 @@ class Revision(object):
         (MultiOperations are flattened into their base operations)
         """
         return list(self.iter_operations())
-
-    @property
-    def suboperations(self):
-        """
-        List of suboperations that make up this revision
-        """
-        return list(self.iter_suboperations())
 
     def apply(self, elements):
         """
@@ -63,7 +54,6 @@ class Revision(object):
         """
         self.operation.apply(elements)
 
-
     def to_dict(self):
         DICT_ATTRIBUTES = [
             'time',
@@ -73,4 +63,4 @@ class Revision(object):
             'session_revision_index',
             'operation',
         ]
-        return {attr:getattr(self,attr) for attr in DICT_ATTRIBUTES}
+        return {attr: getattr(self,attr) for attr in DICT_ATTRIBUTES}
