@@ -135,7 +135,7 @@ class UnmarkStringForDeletion(RangeOperation):
     """
     def apply(self, elements):
         for i in range(self.start_index, self.end_index+1):
-            elements[i-1].suggest = NORMAL
+            elements[i-1].suggest = SUGGEST_NONE
 
 
 class MultiOperation(Operation):
