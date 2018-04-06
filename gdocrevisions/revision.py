@@ -1,5 +1,6 @@
-from operation import operation_factory
 from datetime import datetime
+
+from operation import operation_factory
 
 
 class Revision(object):

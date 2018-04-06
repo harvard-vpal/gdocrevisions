@@ -69,7 +69,7 @@ class Document(object):
         """ List of Revision objects """
         self.content = Content()
         """ Content object """
-        self.latest_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
+        self.latest_revision_id = self.revisions[-1].revision_id if len(self.revisions) > 1 else 1
         # populate content by applying all revisions
         # this also populates the elements on delete suboperations
         self._apply_all_revisions()
@@ -83,7 +83,7 @@ class Document(object):
         """
         Revert document content to a point in time 
         """
-        revisions = filter(lambda revision: revision.time<=datetime, self.revisions)
+        revisions = filter(lambda revision: revision.time <= datetime, self.revisions)
         self.content.reset()
         self.content.apply(revisions)
         return self
@@ -92,10 +92,9 @@ class Document(object):
         """
         Revert document content to a revision id
         """
-        revisions = filter(lambda revision: revision.revision_id<=revision_id, self.revisions)
+        revisions = filter(lambda revision: revision.revision_id <= revision_id, self.revisions)
         self.content.reset()
-        for revision in revisions:
-            self.content.apply(revision)
+        self.content.apply(revisions)
         return self
 
     def to_pickle(self, path):
@@ -231,7 +230,7 @@ class GoogleDoc(Document):
         Generates a url for downloading revision details (using undocumented google api endpoint)
         """
         base_url = 'https://docs.google.com/document/d/{file_id}/revisions/load?id={file_id}&start={start}&end={end}'
-        url = base_url.format(file_id=self.file_id,start=start,end=end)
+        url = base_url.format(file_id=self.file_id, start=start, end=end)
         return url
 
     @timeit
@@ -240,7 +239,7 @@ class GoogleDoc(Document):
         download json-like data with revision info
         """
         last_revision_id = self._last_revision_id()
-        url = self._generate_revision_url(start=1,end=last_revision_id)
+        url = self._generate_revision_url(start=1, end=last_revision_id)
         response = AuthorizedSession(self.credentials).get(url)
         response.raise_for_status()
         data = json.loads(response.text[5:])
