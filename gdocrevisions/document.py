@@ -104,7 +104,7 @@ class Document(object):
         Pickle a Document
         """
         with open(path, 'wb') as f:
-            document = pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     @property
     def sessions(self):
