@@ -17,8 +17,6 @@ from .element import EndOfBody
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 
-
-
 class Content(object):
     """
     Represents document content with a list of Element objects
@@ -51,7 +49,6 @@ class Document(object):
         Arguments:
             revisions (list): list of Revision objects
         """
-
         self.revisions = revisions
         """ List of Revision objects """
         self.content = Content()
@@ -169,8 +166,6 @@ class GoogleDoc(Document):
             credentials (google.auth.credentials.Credentials): Credentials object
             fetch_metadata (bool): Flag indicating whether to fetch additional doc-level metadata, e.g. title
         """
-
-
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
         self.credentials = credentials
         # file identifier string from the URL
