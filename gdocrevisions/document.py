@@ -161,17 +161,24 @@ class GoogleDoc(Document):
         Create a GoogleDoc instance
         Requires either credentials or keyfile arguments to be specified
 
-        Arguments:
-            file_id (str): ID string that can be found in the Google Doc URL
-            credentials (google.auth.credentials.Credentials): Credentials object
-            fetch_metadata (bool): Flag indicating whether to fetch additional doc-level metadata, e.g. title
+        :param file_id: ID string that can be found in the Google Doc URL
+        :param credentials: Credentials object
+        :param fetch_metadata: Flag indicating whether to fetch additional doc-level metadata, e.g. title
+        :param kwargs: Additional kwargs to pass to Document constructor
+
+        :type file_id: str
+        :type credentials: google.auth.credentials.Credentials
+        :type fetch_metadata: bool
         """
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
         self.credentials = credentials
         # file identifier string from the URL
         self.file_id = file_id
+
         # dictionary of document metadata via Google API
         self.metadata = self._fetch_metadata() if fetch_metadata else None
+        """dictionary of document metadata via Google API"""
+
         # document title
         self.name = self.metadata['name'] if self.metadata else None
         # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
