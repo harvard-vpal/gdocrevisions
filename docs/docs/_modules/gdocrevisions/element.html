@@ -1,0 +1,149 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>gdocrevisions.element &#8212; gdocrevisions 0.5.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">gdocrevisions 0.5.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gdocrevisions.element</h1><div class="highlight"><pre>
+<span></span><span class="c1"># constants for suggestion status</span>
+<span class="n">SUGGEST_INSERT</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">SUGGEST_DELETE</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">SUGGEST_NONE</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.element.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base Element class. </span>
+<span class="sd">    Is a list element in a document&#39;s content attribute.</span>
+<span class="sd">    Associated with a revision</span>
+<span class="sd">    Suggest attribute denotes whether element is suggested for insertion (1), suggested for</span>
+<span class="sd">    deletion (-1), or not part of a suggestion (0).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;revision&#39;</span><span class="p">,</span> <span class="s1">&#39;suggest&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">revision</span><span class="p">,</span> <span class="n">suggest</span><span class="o">=</span><span class="n">SUGGEST_NONE</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revision</span> <span class="o">=</span> <span class="n">revision</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suggest</span> <span class="o">=</span> <span class="n">suggest</span>
+
+<div class="viewcode-block" id="Element.render"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.element.Element.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="Character"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.element.Character">[docs]</a><span class="k">class</span> <span class="nc">Character</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Character element</span>
+<span class="sd">    Represents a single character</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;char&#39;</span><span class="p">,</span> <span class="s1">&#39;revision_insert&#39;</span><span class="p">,</span> <span class="s1">&#39;revision_delete&#39;</span><span class="p">,</span> <span class="s1">&#39;suggest&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">,</span> <span class="n">revision</span><span class="p">,</span> <span class="n">suggest</span><span class="o">=</span><span class="n">SUGGEST_NONE</span><span class="p">):</span>
+        <span class="c1"># character string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="n">char</span>
+        <span class="c1"># revision in which element is created</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revision_insert</span> <span class="o">=</span> <span class="n">revision</span>
+        <span class="c1"># placeholder for revision in which element is deleted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">revision_delete</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># indicator whether this is a suggestion, can take values -1, 0, or 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suggest</span> <span class="o">=</span> <span class="n">suggest</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">revision</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Alias for revision_insert attribute</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">revision_insert</span>
+
+<div class="viewcode-block" id="Character.render"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.element.Character.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render this element, typically called by content.render()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suggest</span> <span class="o">==</span> <span class="n">SUGGEST_DELETE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">u</span><span class="s1">&#39;</span><span class="si">{}</span><span class="se">\u0336</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">suggest</span> <span class="o">==</span> <span class="n">SUGGEST_INSERT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">char</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">char</span></div></div>
+
+
+<div class="viewcode-block" id="EndOfBody"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.element.EndOfBody">[docs]</a><span class="k">class</span> <span class="nc">EndOfBody</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dummy element indicating end of document body</span>
+<span class="sd">    Separates main content from footnote text</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">gdocrevisions 0.5.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, President and Fellows of Harvard College.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>

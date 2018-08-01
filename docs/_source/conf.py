@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-    # 'sphinx.ext.viewcode',
+    'sphinx.ext.viewcode',
     'sphinx.ext.githubpages']
 
 # Add any paths that contain templates here, relative to this directory.
@@ -48,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'gdocrevisions'
-copyright = u'2017, President and Fellows of Harvard College'
+copyright = u'2018, President and Fellows of Harvard College'
 author = u'Andrew Ang'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -84,7 +84,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -155,4 +155,6 @@ texinfo_documents = [
 ]
 
 
-
+# -- Options for autoclass behavior ---------------------------------------
+# Both the class’ and the __init__ method’s docstring are concatenated and inserted.
+autoclass_content = 'both'
