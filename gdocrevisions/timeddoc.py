@@ -1,8 +1,5 @@
-from builtins import super
-
-import gdocrevisions
-
 from timeit import default_timer as timer
+from gdocrevisions import GoogleDoc
 
 
 def timeit(method):
@@ -20,7 +17,7 @@ def timeit(method):
     return timed
 
 
-class TimedDoc(gdocrevisions.GoogleDoc):
+class TimedDoc(GoogleDoc):
     """
     Time the following GoogleDoc methods:
     1. _download_revision_details()
@@ -36,12 +33,12 @@ class TimedDoc(gdocrevisions.GoogleDoc):
 
     @timeit
     def _download_revision_details(self):
-        return super(TimedDoc, self)._download_revision_details()
+        return super()._download_revision_details()
 
     @timeit
     def _build_revisions(self):
-        return super(TimedDoc, self)._build_revisions()
+        return super()._build_revisions()
 
     @timeit
     def _apply_all_revisions(self):
-        return super(TimedDoc, self)._apply_all_revisions()
+        return super()._apply_all_revisions()
