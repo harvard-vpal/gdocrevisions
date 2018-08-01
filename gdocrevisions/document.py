@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import json
 import pickle
 import logging
-from timeit import default_timer as timer
 from collections import defaultdict
 
 from apiclient.discovery import build
@@ -16,21 +15,6 @@ from .element import EndOfBody
 
 # suppress warnings from google api client library
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
-
-
-def timeit(method):
-    """
-    Decorator for timing an instance method and recording elapsed time in self.times (dict)
-    """
-    def timed(*args, **kwargs):
-        start = timer()
-        result = method(*args, **kwargs)
-        stop = timer()
-        # args[0] is self
-        args[0]._times[method.__name__] = stop-start
-        return result
-
-    return timed
 
 
 class Content(object):
@@ -65,8 +49,6 @@ class Document(object):
         Arguments:
             revisions (list): list of Revision objects
         """
-        # used to store execution times for performance testing
-        self._times = getattr(self, '_times', {})
         self.revisions = revisions
         """ List of Revision objects """
         self.content = Content()
@@ -76,7 +58,6 @@ class Document(object):
         # this also populates the elements on delete suboperations
         self._apply_all_revisions()
 
-    @timeit
     def _apply_all_revisions(self):
         for revision in self.revisions:
             self.content.apply(revision)
@@ -104,7 +85,7 @@ class Document(object):
         Pickle a Document
         """
         with open(path, 'wb') as f:
-            document = pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     @property
     def sessions(self):
@@ -185,9 +166,6 @@ class GoogleDoc(Document):
             credentials (google.auth.credentials.Credentials): Credentials object
             fetch_metadata (bool): Flag indicating whether to fetch additional doc-level metadata, e.g. title
         """
-
-        # used to store execution times for performance testing
-        self._times = {}
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
         self.credentials = credentials
         # file identifier string from the URL
@@ -208,8 +186,7 @@ class GoogleDoc(Document):
         Return an authorized drive api service object
         """
         return build('drive', 'v3', credentials=self.credentials)
-        
-    @timeit
+
     def _fetch_metadata(self):
         """
         Fetch a dictionary of document-level metadata via Google API
@@ -235,7 +212,6 @@ class GoogleDoc(Document):
         url = base_url.format(file_id=self.file_id, start=start, end=end)
         return url
 
-    @timeit
     def _download_revision_details(self):
         """
         download json-like data with revision info
@@ -247,7 +223,6 @@ class GoogleDoc(Document):
         data = json.loads(response.text[5:])
         return data
 
-    @timeit
     def _build_revisions(self):
         return [Revision(r) for r in self.revisions_raw['changelog']]
 
