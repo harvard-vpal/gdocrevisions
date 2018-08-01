@@ -1,2 +1,2 @@
-oauth2client
-google-api-python-client
+# additional requirements for tests
+google-auth-oauthlib==0.2.0

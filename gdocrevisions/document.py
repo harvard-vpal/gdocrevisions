@@ -1,34 +1,20 @@
-from apiclient.discovery import build
-from httplib2 import Http
+from __future__ import absolute_import
+
 import json
-from revision import Revision
-from session import Session
 import pickle
-from collections import defaultdict
-import copy
 import logging
-from element import EndOfBody
-from oauth2client.client import OAuth2Credentials
-from oauth2client.service_account import ServiceAccountCredentials
-from timeit import default_timer as timer
+from collections import defaultdict
+
+from apiclient.discovery import build
+from google.auth.transport.requests import AuthorizedSession
+
+from .revision import Revision
+from .session import Session
+from .element import EndOfBody
+
 
 # suppress warnings from google api client library
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
-
-
-def timeit(method):
-    """
-    Decorator for timing an instance method and recording elapsed time in self.times (dict)
-    """
-    def timed(*args, **kwargs):
-        start = timer()
-        result = method(*args, **kwargs)
-        stop = timer()
-        # args[0] is self
-        args[0]._times[method.__name__] = stop-start
-        return result
-
-    return timed
 
 
 class Content(object):
@@ -40,21 +26,12 @@ class Content(object):
 
     def apply(self, change):
         """
-        Apply some change (could be a revision, operation, or suboperation) to the content elements
+        Apply some change (could be a revision or operation) to the content elements
 
         Arguments:
-            change (Revision, Operation, or Suboperation): object whose changes should be applied to the content instance
+            change (Revision or Operation instance): object whose changes should be applied to the content instance
         """
         change.apply(self.elements)
-
-    def undo(self, change):
-        """
-        Undo some change (could be a revision, operation, or suboperation) to the content elements
-
-        Arguments:
-            change (Revision, Operation, or Suboperation): object whose changes should be undone from the content instance
-        """
-        change.undo(self.elements)
         
     def render(self):
         return ''.join([element.render() for element in self.elements])
@@ -72,17 +49,15 @@ class Document(object):
         Arguments:
             revisions (list): list of Revision objects
         """
-        self._times = getattr(self, '_times', {})
         self.revisions = revisions
         """ List of Revision objects """
         self.content = Content()
         """ Content object """
-        self.latest_revision_id = self.revisions[-1].revision_id if len(self.revisions)>1 else 1
+        self.latest_revision_id = self.revisions[-1].revision_id if len(self.revisions) > 1 else 1
         # populate content by applying all revisions
         # this also populates the elements on delete suboperations
         self._apply_all_revisions()
 
-    @timeit
     def _apply_all_revisions(self):
         for revision in self.revisions:
             self.content.apply(revision)
@@ -91,7 +66,7 @@ class Document(object):
         """
         Revert document content to a point in time 
         """
-        revisions = filter(lambda revision: revision.time<=datetime, self.revisions)
+        revisions = filter(lambda revision: revision.time <= datetime, self.revisions)
         self.content.reset()
         self.content.apply(revisions)
         return self
@@ -100,10 +75,9 @@ class Document(object):
         """
         Revert document content to a revision id
         """
-        revisions = filter(lambda revision: revision.revision_id<=revision_id, self.revisions)
+        revisions = filter(lambda revision: revision.revision_id <= revision_id, self.revisions)
         self.content.reset()
-        for revision in revisions:
-            self.content.apply(revision)
+        self.content.apply(revisions)
         return self
 
     def to_pickle(self, path):
@@ -111,7 +85,7 @@ class Document(object):
         Pickle a Document
         """
         with open(path, 'wb') as f:
-            document = pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     @property
     def sessions(self):
@@ -182,27 +156,31 @@ class GoogleDoc(Document):
     Google doc class
     Contains document metadata and revision history
     """
-    def __init__(self, file_id, credentials=None, keyfile=None, metadata=True, **kwargs):
+    def __init__(self, file_id, credentials, fetch_metadata=True, **kwargs):
         """
         Create a GoogleDoc instance
         Requires either credentials or keyfile arguments to be specified
 
-        Arguments:
-            file_id (str): ID string that can be found in the Google Doc URL
-            credentials (oauth2client.OAuth2Credentals): credentials object
-            keyfile (str): Path to a service account json keyfile
-            metadata (bool): Whether to fetch additional doc-level metadata, e.g. title
+        :param file_id: ID string that can be found in the Google Doc URL
+        :param credentials: Credentials object
+        :param fetch_metadata: Flag indicating whether to fetch additional doc-level metadata, e.g. title
+        :param kwargs: Additional kwargs to pass to Document constructor
+
+        :type file_id: str
+        :type credentials: google.auth.credentials.Credentials
+        :type fetch_metadata: bool
         """
-        # used by _record_time for recording timing information
-        self._times = {}
         # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
-        self.credentials = self._get_credentials(credentials, keyfile)
+        self.credentials = credentials
         # file identifier string from the URL
         self.file_id = file_id
+
         # dictionary of document metadata via Google API
-        self.metadata = self._fetch_metadata() if metadata else None
+        self.metadata = self._fetch_metadata() if fetch_metadata else None
+        """dictionary of document metadata via Google API"""
+
         # document title
-        self.name = self.metadata['name'] if metadata else None
+        self.name = self.metadata['name'] if self.metadata else None
         # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
         self.revisions_raw = self._download_revision_details()
         # array of Revision objects
@@ -210,26 +188,12 @@ class GoogleDoc(Document):
         # initialize Document attributes
         super(GoogleDoc, self).__init__(revisions, **kwargs)
 
-
-    def _get_credentials(self, credentials, keyfile):
-        if credentials:
-            if isinstance(credentials, OAuth2Credentials):
-                return credentials
-            else:
-                raise TypeError("Credential object is not a valid OAuth2Credentials object")
-        elif keyfile:
-            scope = ['https://www.googleapis.com/auth/drive']
-            return ServiceAccountCredentials.from_json_keyfile_name(keyfile, scope)
-        else:
-            raise ValueError("No credentials provided")
-
     def _gdrive_api(self):
         """
         Return an authorized drive api service object
         """
         return build('drive', 'v3', credentials=self.credentials)
-        
-    @timeit
+
     def _fetch_metadata(self):
         """
         Fetch a dictionary of document-level metadata via Google API
@@ -252,21 +216,20 @@ class GoogleDoc(Document):
         Generates a url for downloading revision details (using undocumented google api endpoint)
         """
         base_url = 'https://docs.google.com/document/d/{file_id}/revisions/load?id={file_id}&start={start}&end={end}'
-        url = base_url.format(file_id=self.file_id,start=start,end=end)
+        url = base_url.format(file_id=self.file_id, start=start, end=end)
         return url
 
-    @timeit
     def _download_revision_details(self):
         """
         download json-like data with revision info
         """
-        http_auth = self.credentials.authorize(Http())
         last_revision_id = self._last_revision_id()
-        url = self._generate_revision_url(start=1,end=last_revision_id)
-        raw_text = http_auth.request(url)[1][5:]
-        return json.loads(raw_text)
+        url = self._generate_revision_url(start=1, end=last_revision_id)
+        response = AuthorizedSession(self.credentials).get(url)
+        response.raise_for_status()
+        data = json.loads(response.text[5:])
+        return data
 
-    @timeit
     def _build_revisions(self):
         return [Revision(r) for r in self.revisions_raw['changelog']]
 
@@ -278,4 +241,3 @@ def read_pickle(path):
     with open(path, 'rb') as f:
         document = pickle.load(f)
     return document
-
