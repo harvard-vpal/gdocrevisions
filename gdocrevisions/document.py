@@ -64,20 +64,24 @@ class Document(object):
 
     def at_time(self, datetime):
         """
-        Revert document content to a point in time 
+        Revert document content to a point in time
+        TODO may consider returning a copy
         """
-        revisions = filter(lambda revision: revision.time <= datetime, self.revisions)
+        revisions = list(filter(lambda revision: revision.time <= datetime, self.revisions))
         self.content.reset()
-        self.content.apply(revisions)
+        for revision in revisions:
+            self.content.apply(revision)
         return self
 
     def at_revision(self, revision_id):
         """
         Revert document content to a revision id
+        TODO may consider returning a copy
         """
-        revisions = filter(lambda revision: revision.revision_id <= revision_id, self.revisions)
+        revisions = list(filter(lambda revision: revision.revision_id <= revision_id, self.revisions))
         self.content.reset()
-        self.content.apply(revisions)
+        for revision in revisions:
+            self.content.apply(revision)
         return self
 
     def to_pickle(self, path):
