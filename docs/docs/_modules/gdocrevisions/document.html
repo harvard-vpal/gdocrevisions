@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>gdocrevisions.document &#8212; gdocrevisions 1.0.0 documentation</title>
+    <title>gdocrevisions.document &#8212; gdocrevisions 1.0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
@@ -25,7 +25,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">gdocrevisions 1.0.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">gdocrevisions 1.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -102,20 +102,24 @@
 
 <div class="viewcode-block" id="Document.at_time"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.document.Document.at_time">[docs]</a>    <span class="k">def</span> <span class="nf">at_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Revert document content to a point in time </span>
+<span class="sd">        Revert document content to a point in time</span>
+<span class="sd">        TODO may consider returning a copy</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">revisions</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">revision</span><span class="p">:</span> <span class="n">revision</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;=</span> <span class="n">datetime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">revisions</span><span class="p">)</span>
+        <span class="n">revisions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">revision</span><span class="p">:</span> <span class="n">revision</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;=</span> <span class="n">datetime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">revisions</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">revisions</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">revision</span> <span class="ow">in</span> <span class="n">revisions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">revision</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Document.at_revision"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.document.Document.at_revision">[docs]</a>    <span class="k">def</span> <span class="nf">at_revision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">revision_id</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Revert document content to a revision id</span>
+<span class="sd">        TODO may consider returning a copy</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">revisions</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">revision</span><span class="p">:</span> <span class="n">revision</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">&lt;=</span> <span class="n">revision_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">revisions</span><span class="p">)</span>
+        <span class="n">revisions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">revision</span><span class="p">:</span> <span class="n">revision</span><span class="o">.</span><span class="n">revision_id</span> <span class="o">&lt;=</span> <span class="n">revision_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">revisions</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">revisions</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">revision</span> <span class="ow">in</span> <span class="n">revisions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">revision</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Document.to_pickle"><a class="viewcode-back" href="../../gdocrevisions.html#gdocrevisions.document.Document.to_pickle">[docs]</a>    <span class="k">def</span> <span class="nf">to_pickle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
@@ -311,7 +315,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">gdocrevisions 1.0.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">gdocrevisions 1.0.1 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
       </ul>
     </div>

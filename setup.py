@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='gdocrevisions',
-    version='1.0.0',
+    version='1.0.1',
     description='Package for downloading and analyzing google doc revision history data.',
     url='https://github.com/harvard-vpal/gdocrevisions',
     author='Andrew Ang',
