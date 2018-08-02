@@ -46,3 +46,7 @@ def test_doc_timing(credentials):
     assert type(timed_doc.times['_download_revision_details']) == float
     assert type(timed_doc.times['_build_revisions']) == float
     assert type(timed_doc.times['_apply_all_revisions']) == float
+
+
+def test_to_revision(doc):
+    assert doc.at_revision(5)
