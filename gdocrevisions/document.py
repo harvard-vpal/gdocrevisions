@@ -215,7 +215,7 @@ class GoogleDoc(Document):
 
     def _last_revision_id(self):
         """
-        Return the id of the last revision to a document, using the offical google api v3
+        Return the id of the last revision to a document, using the official google api v3
         """
         revision_metainfo = self._gdrive_api().revisions().list(fileId=self.file_id).execute()
         if len(revision_metainfo['revisions']) == 0:
