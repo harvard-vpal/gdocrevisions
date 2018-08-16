@@ -160,10 +160,10 @@ class GoogleDoc(Document):
     Google doc class
     Contains document metadata and revision history
     """
-    def __init__(self, file_id, credentials=None, metadata=None, data=None, **kwargs):
+    def __init__(self, file_id=None, credentials=None, metadata=None, data=None, **kwargs):
         """
         Create a GoogleDoc instance
-        Requires either credentials or keyfile arguments to be specified
+        Requires either (file_id, credentials) or (metadata, data) are provided
 
         :param file_id: ID string that can be found in the Google Doc URL
         :param credentials: Credentials object
@@ -177,24 +177,20 @@ class GoogleDoc(Document):
         :type data: dict
         """
         # arg validation
-        if not (metadata and data) and not credentials:
-            raise ValueError("Invalid arguments: Provide either a credential or initial data/metadata")
-        if (metadata is None)^(data is None):
-            print("Warning: only one of metadata and data arguments provided")
+        if not (file_id and credentials) or (metadata and data):
+            raise ValueError("Invalid arguments: Provide either (file_id, credentials) or (metadata, data)")
 
         self.credentials = credentials
         """Google credentials object"""
 
-        self.file_id = file_id
+        self.file_id = file_id or metadata.get('id')
         """file identifier string from the URL"""
 
-        # assign or fetch data
-        # dictionary of document metadata via Google API
         self.metadata = metadata or self._fetch_metadata()
         """dictionary of document metadata via Google API"""
 
         self.revisions_raw = data or self._download_revision_details()
-        """dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"""
+        """dict of raw revision metadata, containing top-level keys "changelog" and "chunkedSnapshot" """
 
         self.name = self.metadata.get('name')
         """document title, taken from metadata"""
