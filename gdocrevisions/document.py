@@ -160,35 +160,48 @@ class GoogleDoc(Document):
     Google doc class
     Contains document metadata and revision history
     """
-    def __init__(self, file_id, credentials, fetch_metadata=True, **kwargs):
+    def __init__(self, file_id, credentials=None, metadata=None, data=None, **kwargs):
         """
         Create a GoogleDoc instance
         Requires either credentials or keyfile arguments to be specified
 
         :param file_id: ID string that can be found in the Google Doc URL
         :param credentials: Credentials object
-        :param fetch_metadata: Flag indicating whether to fetch additional doc-level metadata, e.g. title
+        :param dict of doc-level metadata, e.g. title. if not provided, metadata will be fetched
+        :param data: raw json dict for revisions; providing this will skip data download step and instead use provided data
         :param kwargs: Additional kwargs to pass to Document constructor
 
         :type file_id: str
         :type credentials: google.auth.credentials.Credentials
-        :type fetch_metadata: bool
+        :type metadata: dict
+        :type data: dict
         """
-        # google credentials object instance (oauth2client.OAuth2Credentials or subclass)
-        self.credentials = credentials
-        # file identifier string from the URL
-        self.file_id = file_id
+        # arg validation
+        if not (metadata and data) and not credentials:
+            raise ValueError("Invalid arguments: Provide either a credential or initial data/metadata")
+        if (metadata is None)^(data is None):
+            print("Warning: only one of metadata and data arguments provided")
 
+        self.credentials = credentials
+        """Google credentials object"""
+
+        self.file_id = file_id
+        """file identifier string from the URL"""
+
+        # assign or fetch data
         # dictionary of document metadata via Google API
-        self.metadata = self._fetch_metadata() if fetch_metadata else None
+        self.metadata = metadata or self._fetch_metadata()
         """dictionary of document metadata via Google API"""
 
-        # document title
-        self.name = self.metadata['name'] if self.metadata else None
-        # dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"
-        self.revisions_raw = self._download_revision_details()
-        # array of Revision objects
+        self.revisions_raw = data or self._download_revision_details()
+        """dict of raw revision metadata, containing keys "changelog" and "chunkedSnapshot"""
+
+        self.name = self.metadata.get('name')
+        """document title, taken from metadata"""
+
         revisions = self._build_revisions()
+        """list of Revision objects constructed from raw data"""
+
         # initialize Document attributes
         super(GoogleDoc, self).__init__(revisions, **kwargs)
 
@@ -225,13 +238,15 @@ class GoogleDoc(Document):
 
     def _download_revision_details(self):
         """
-        download json-like data with revision info
+        Downloads raw revision data json-like data with revision info
+        :return: json
+        :rtype: dict
         """
         last_revision_id = self._last_revision_id()
         url = self._generate_revision_url(start=1, end=last_revision_id)
         response = AuthorizedSession(self.credentials).get(url)
         response.raise_for_status()
-        data = json.loads(response.text[5:])
+        data = json.loads(response.text[5:])  # cleans out first few characters so it becomes valid json
         return data
 
     def _build_revisions(self):
