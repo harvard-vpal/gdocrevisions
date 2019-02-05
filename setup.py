@@ -16,4 +16,6 @@ setup(
         'requests==2.19.1',
         'future==0.16.0',
     ],
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
 )
