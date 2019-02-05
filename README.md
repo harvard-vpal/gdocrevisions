@@ -1,5 +1,6 @@
 # gdocrevisions: Google Doc Revisions
 [![pypi](https://img.shields.io/pypi/v/gdocrevisions.svg)](https://pypi.org/project/gdocrevisions)
+[![Build Status](https://travis-ci.org/harvard-vpal/gdocrevisions.svg?branch=master)](https://travis-ci.org/harvard-vpal/gdocrevisions)
 
 Python package to retrieve and process google doc revision history data.
 

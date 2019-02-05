@@ -7,3 +7,6 @@ doc-revisions-98c56004e106.json
 build/
 dist/
 doctrees/
+__gitignore__.py
+.pytest_cache/
+.eggs/
