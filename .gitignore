@@ -10,3 +10,4 @@ doctrees/
 __gitignore__.py
 .pytest_cache/
 .eggs/
+.env

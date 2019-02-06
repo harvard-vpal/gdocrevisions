@@ -3,10 +3,11 @@ Tests for gdocrevisions library
 
 Usage:
 
->>> pytest
+pytest
 """
 
 import os
+import json
 import pytest
 from google.oauth2 import service_account
 import gdocrevisions
@@ -18,14 +19,14 @@ FILE_ID = '14QhwN0vBkbC6u9PQ4j3iOOc-G89HkQEKkjz7GQvaCcc'  # file id of small tes
 
 @pytest.fixture(scope="module")
 def credentials():
-    print("my file: {}".format(__file__))
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # top level repo dir
-    SCOPE = ['https://www.googleapis.com/auth/drive']
-    # default credential file location is <repo>/credentials/serviceaccount.json
-    DEFAULT_CREDENTIAL_FILE = os.path.join(BASE_DIR, 'credentials', 'serviceaccount.json')
-    # can specify custom credential location using GDOCREVISIONS_GOOGLE_APPLICATION_CREDENTIALS env variable
-    credential_file = os.getenv('GDOCREVISIONS_GOOGLE_APPLICATION_CREDENTIALS', DEFAULT_CREDENTIAL_FILE)
-    return service_account.Credentials.from_service_account_file(credential_file, scopes=SCOPE)
+    # GOOGLE_APPLICATION_CREDENTIAL_INFO is an env variable containing the text content of a service account credential file
+    credential_info = os.getenv('GOOGLE_SERVICE_ACCOUNT_INFO')
+    if not credential_info:
+        raise ValueError('No google credential info specified (GOOGLE_SERVICE_ACCOUNT_INFO)')
+    return service_account.Credentials.from_service_account_info(
+        json.loads(credential_info),
+        scopes=['https://www.googleapis.com/auth/drive']
+    )
 
 
 @pytest.fixture(scope="module")
