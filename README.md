@@ -50,3 +50,9 @@ gdoc.metadata
 gdoc.revisions
 gdoc.revisions[0].operation
 ```
+
+### Development environment
+
+A Docker-based environment is specified for development and testing.
+
+The environment variable `GOOGLE_SERVICE_ACCOUNT_INFO` must be populated in order to run tests. The variable should contain the text content of a Google service account file, for use with `google.oauth2.service_account,.Credentials.from_service_account_info. It can be defined in a `.env` file in the same directory as `docker-compose.yml`.

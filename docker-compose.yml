@@ -10,3 +10,5 @@ services:
       - ./gdocrevisions:/usr/local/lib/python3.6/site-packages/gdocrevisions
       # mount AWS credential info
       - ${HOME}/.aws/credentials:/root/.aws/credentials
+    environment:
+      - GOOGLE_SERVICE_ACCOUNT_INFO=${GOOGLE_SERVICE_ACCOUNT_INFO}
